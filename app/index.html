@@ -149,7 +149,55 @@ nav.bar button[aria-current="page"] svg { stroke: var(--ver); }
 .clock { font: 500 20px var(--f-mono); font-variant-numeric: tabular-nums; color: var(--muted); }
 .sess .row { justify-content: center; }
 input[type=range] { width: 100%; accent-color: var(--accent); }
-@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+.ico { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; flex: none; color: var(--on-accent); background: var(--accent); }
+.ico svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.dayhero { border-radius: 22px; padding: 22px 20px; display: grid; gap: 12px; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: linear-gradient(150deg, color-mix(in srgb, var(--accent) 24%, var(--surface)) 0%, var(--surface) 70%); }
+.dh-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.dh-top h1 { font-size: 56px; line-height: 1; }
+.headline { font: 400 28px/1.15 var(--f-display); text-wrap: balance; }
+.linkbtn { background: transparent; border: 0; padding: 0; color: var(--accent); font-size: 14px; text-decoration: underline; justify-self: start; }
+.ringsvg { width: 74px; height: 74px; flex: none; }
+.ringsvg circle { fill: none; stroke-width: 7; }
+.ringsvg .bg { stroke: var(--line); }
+.ringsvg .fg { stroke: var(--accent); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray .6s ease; }
+.ringsvg text { fill: var(--fg); font: 500 15px var(--f-mono); text-anchor: middle; dominant-baseline: central; }
+.tl { position: relative; display: grid; gap: 12px; }
+.tl::before { content: ""; position: absolute; left: 21px; top: 30px; bottom: 30px; width: 2px; background: var(--line); }
+.tcard { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; padding: 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+.tcard .ico { background: var(--surface-2); color: var(--muted); }
+.tcard.now { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.tcard.now .ico, .tcard.done .ico { background: var(--accent); color: var(--on-accent); }
+.tc-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.tc-top h4 { margin: 0; font: 600 16px var(--f-body); }
+.tc-min { font: 500 12px var(--f-mono); color: var(--muted); white-space: nowrap; }
+.tc-body { display: grid; gap: 6px; min-width: 0; }
+.tc-body p { font-size: 14.5px; color: var(--muted); }
+.tc-state { font: 500 11px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.celebrate { border-radius: 22px; padding: 20px; display: grid; gap: 6px; text-align: center; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
+.celebrate .big { font: 400 32px/1.1 var(--f-display); }
+.whybanner { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; padding: 16px; border-radius: 18px; background: linear-gradient(150deg, color-mix(in srgb, var(--accent) 20%, var(--surface)), var(--surface) 80%); border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.whybanner b { font: 500 12px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.cue { font: italic 400 24px/1.35 var(--f-display); min-height: 100px; display: grid; align-items: center; padding: 0 4px; text-wrap: balance; }
+.cue.in { animation: cueIn .9s ease; }
+@keyframes cueIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+#welcome { position: fixed; inset: 0; z-index: 12; background: var(--bg); display: none; overflow-y: auto;
+  padding-block: calc(28px + env(safe-area-inset-top, 0px)) calc(28px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); }
+#welcome.open { display: block; }
+.wel { max-width: 480px; margin: 0 auto; min-height: calc(100vh - 80px); display: grid; align-content: space-between; gap: 22px; }
+.wel-body { display: grid; gap: 18px; align-content: start; animation: cueIn .6s ease; }
+.wel h1 { font-size: clamp(36px, 10vw, 46px); }
+.wrow { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 14px; align-items: center; }
+.wrow .ico { width: 48px; height: 48px; border-radius: 50%; }
+.wrow h4 { margin: 0; font: 600 17px var(--f-body); }
+.wrow p { font-size: 14.5px; color: var(--muted); }
+.wdots { display: flex; gap: 8px; justify-content: center; }
+.wdots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.wdots i.on { background: var(--ver); width: 24px; border-radius: 4px; }
+.wnav { display: grid; gap: 10px; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; animation: none !important; } }
 </style>
 </head>
 <body>
@@ -161,6 +209,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   <div class="sess" data-phase="ver" id="sessBox">
     <div><div class="kicker" id="sPhase"></div><h2 id="sTitle"></h2><p class="muted small" id="sDesc"></p></div>
     <div class="orb-wrap"><div class="ring"></div><div class="orb" id="orb"></div><div class="orb-label" id="orbLabel">Listo</div></div>
+    <p class="cue" id="cue"></p>
     <div class="clock" id="clock">15:00</div>
     <div class="row" id="sDur" role="group" aria-label="Duración"></div>
     <button class="btn full" id="sGo" type="button">Comenzar</button>
@@ -169,6 +218,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     <button class="back" id="sClose" type="button" style="justify-self:center">Cerrar</button>
   </div>
 </section>
+
+<section id="welcome" aria-label="Bienvenida"><div class="wel" id="welBox"></div></section>
 
 <script>
 /* ============ Utilidades ============ */
@@ -200,6 +251,32 @@ const DAYS = [
   { t: "Tu plan de acción", intro: "Elige tres acciones concretas y ponles fecha.", kind: "plan", ch: "Haz hoy la primera acción de tu plan." },
   { t: "El primer paso real", intro: "Cierra el ciclo con acción y decide tu próximo paso.", kind: "close", ch: "Da el siguiente paso de tu plan y decide el que sigue." }
 ];
+const DAYX = [
+  { h: "Hoy defines quién vas a ser", why: "Todo cambio empieza cuando decides hacia dónde vas y en quién te conviertes. Hoy lo dejas claro.", how: ["Respira con el círculo y piensa en tu objetivo como si ya fuera real.", "Elige tu pilar, tu objetivo y tres cualidades que quieres encarnar.", "Cuéntale a una persona de confianza cuál es tu objetivo."], mins: [15, 3, 5] },
+  { h: "Hoy sueltas lo que te frena", why: "Tu mente repite una frase vieja sin que lo notes. Nombrarla le quita poder y una frase nueva ocupa su lugar.", how: ["Repite en silencio tu frase nueva cada vez que exhalas.", "Elige la resistencia que más te repites y la frase que la reemplaza.", "Haz algo que llevas días posponiendo."], mins: [15, 3, 5] },
+  { h: "Hoy ves tu nueva vida", why: "Cuando tu mente ve con detalle hacia dónde vas, empieza a buscar el camino.", how: ["Imagina tu escena con todos los sentidos.", "Arma tu collage y míralo 2 minutos con gratitud.", "Pide algo que normalmente no pedirías."], mins: [15, 5, 5] },
+  { h: "Hoy lo sientes en el cuerpo", why: "Sentir tu nueva realidad la vuelve familiar. La mañana es el mejor momento para instalarla.", how: ["Siente tu escena y repite tu frase nueva.", "Haz tu ancla de la mañana: 5 minutos al despertar.", "Di “no” con calma a algo que no quieres hacer."], mins: [15, 5, 5] },
+  { h: "Hoy mides tu cambio", why: "Lo que se mide se nota. Compara cómo te sientes antes y después, y verás tu avance.", how: ["Haz la sesión y nota cómo cambia tu estado.", "Anota cómo te sentías antes y cómo te sientes ahora.", "Habla con alguien nuevo sobre lo que quieres crear."], mins: [15, 2, 5] },
+  { h: "Hoy relajas el cuerpo", why: "Un cuerpo en calma sostiene mejor lo que estás creando. Hoy sueltas tensión y eliges qué dejar atrás.", how: ["Deja que el audio afloje tu cuerpo.", "Haz el repaso corporal y elige algo que dejas de hacer.", "Muestra algo tuyo sin esperar a que esté perfecto."], mins: [15, 5, 5] },
+  { h: "Hoy alineas tus tres capas", why: "Energía, mente y acción deben tener el mismo tamaño. Hoy ves dónde hay un desajuste y cómo cerrarlo.", how: ["Piensa en tu meta como algo posible.", "Responde el filtro de coherencia y lee tu ajuste.", "Haz la llamada o manda el mensaje que has evitado."], mins: [15, 3, 5] },
+  { h: "Hoy armas tu plan", why: "Una meta sin pasos concretos se queda en deseo. Hoy eliges tres acciones y les pones fecha.", how: ["Piensa en tu primer paso concreto.", "Elige tus tres acciones y cuándo las haces.", "Haz hoy la primera acción de tu plan."], mins: [15, 5, 5] },
+  { h: "Hoy das el primer paso real", why: "Cierras el ciclo con acción. Lo que hagas hoy demuestra que tu cambio es real.", how: ["Siente la confianza de quien ya está actuando.", "Marca lo que ya hiciste y elige tu próximo paso.", "Da el siguiente paso y decide el que sigue."], mins: [15, 3, 5] }
+];
+const IC = {
+  audio: '<path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+  paso: '<path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/><path d="M14 6l3 3"/>',
+  accion: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  energia: '<path d="M3 12h3l2-6 4 12 3-9 2 3h4"/>',
+  mente: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+  check: '<path d="M5 12l5 5 9-10"/>',
+  sol: '<circle cx="12" cy="13" r="4"/><path d="M12 3v3M4.5 7.5l2 2M19.5 7.5l-2 2M3 18h18"/>'
+};
+const svg = (n) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + IC[n] + "</svg>";
+const CUES = {
+  ver: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja la frente, la mandíbula y los hombros. Suelta un poco más con cada exhalación."], [.22, "Piensa en tu objetivo: {objetivo}."], [.38, "Imagínalo como si ya fuera real. ¿Dónde estás? ¿Qué ves, qué oyes, qué sientes?"], [.55, "Ahora siente que eres {cualidades}. Nota cómo se siente tu cuerpo siendo esa persona."], [.72, "Agradece, como si ya lo estuvieras viviendo."], [.88, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]],
+  sentir: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja el cuerpo de arriba abajo: cara, cuello, pecho, abdomen, piernas."], [.22, "Recuerda tu frase nueva: “{frase}”. Repítela en silencio al exhalar."], [.4, "Visualiza tu escena y deja que la emoción suba: calma, alegría, seguridad."], [.58, "Quédate en esa emoción. No hace falta pensar, solo sentir."], [.75, "Agradece con todo el cuerpo, como si ya fuera tu vida."], [.9, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]],
+  actuar: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja la frente, la mandíbula y los hombros."], [.22, "Piensa en tu meta: {objetivo}. Siente que ya es posible."], [.4, "Piensa en tu siguiente paso concreto. ¿Cuál es la primera acción?"], [.58, "Imagínate haciéndola con calma y decisión."], [.75, "Siente la confianza de alguien que actúa. Eres {cualidades}."], [.9, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]]
+};
 const PILARES = [
   { id: "dinero", name: "Dinero y abundancia", scenes: ["ciudad", "amanecer", "camino", "hogar"],
     goals: ["Generar ingresos estables que me den tranquilidad", "Crear un negocio que funcione sin depender de mi tiempo", "Salir de mis deudas", "Duplicar mis ingresos", "Tener ahorros e inversiones", "Vivir de lo que amo hacer"],
@@ -337,14 +414,19 @@ function tick() {
   let k; if (ph < inh) { k = ease(ph / inh); $("#orbLabel").textContent = "Inhala"; } else { k = 1 - ease((ph - inh) / exh); $("#orbLabel").textContent = "Exhala"; }
   $("#orb").style.transform = "scale(" + (0.7 + 0.3 * k).toFixed(3) + ")";
   $("#clock").textContent = fmt((endAt - now) / 1000) + " restantes";
+  const frac = el / (sess.minutes * 60); let ci = 0; sess.cues.forEach((c, k) => { if (frac >= c[0]) ci = k; });
+  if (ci !== sess.cueIdx) { sess.cueIdx = ci; setCue(sess.cues[ci][1]); }
   if (now >= endAt) { stopAudio(); sess.finished = true; sess.started = false; renderSession(); return; }
   requestAnimationFrame(tick);
 }
 
 /* ============ Sesión de audio (pantalla completa) ============ */
+function joinList(a) { return a.length > 1 ? a.slice(0, -1).join(", ") + " y " + a[a.length - 1] : a[0] || ""; }
+function personalize(t) { const d = (S && S.data) || {}; return t.replace("{objetivo}", objetivoTxt(d) || "tu objetivo").replace("{cualidades}", joinList(d.rasgos || []) || "la persona que quieres ser").replace("{frase}", d.fraseNueva || "tu frase nueva"); }
+function setCue(t) { const c = $("#cue"); c.textContent = t; c.classList.remove("in"); void c.offsetWidth; c.classList.add("in"); }
 function openSession() {
   const i = todayIdx(), ph = phaseOf(i);
-  sess = { open: true, minutes: sess.minutes || 15, started: false, finished: false, track: ph.track, idx: i, phase: ph };
+  sess = { open: true, minutes: sess.minutes || 15, started: false, finished: false, track: ph.track, idx: i, phase: ph, cues: CUES[ph.id].map(([f, t]) => [f, personalize(t)]), cueIdx: -1 };
   $("#sess").classList.add("open"); renderSession();
 }
 function renderSession() {
@@ -355,13 +437,15 @@ function renderSession() {
   $("#sDesc").textContent = sess.track.band + " · respiración " + sess.track.breath[0] + "-" + sess.track.breath[1];
   const dur = $("#sDur");
   dur.innerHTML = sess.started ? "" : [6, 10, 15, 20].map(m => '<button class="chip" type="button" data-min="' + m + '" aria-pressed="' + (sess.minutes === m) + '">' + m + " min</button>").join("");
-  $("#sGo").textContent = sess.finished ? "Sesión completa · Cerrar" : sess.started ? "Terminar" : "Comenzar";
+  const stepPending = !(S.days[sess.idx] && S.days[sess.idx].step) && sess.idx === todayIdx();
+  $("#sGo").textContent = sess.finished ? (stepPending ? "Ir a mi paso del día" : "Cerrar") : sess.started ? "Terminar" : "Comenzar";
+  if (!sess.started) setCue(sess.finished ? "Sesión completa. Respira, agradece y llévate esta sensación al resto del día." : "Siéntate cómodo, ponte audífonos y cierra los ojos. Aquí te iré guiando con texto mientras suena el audio.");
   if (!sess.started) { $("#clock").textContent = sess.finished ? "00:00" : fmt(sess.minutes * 60); $("#orb").style.transform = "scale(.7)"; $("#orbLabel").textContent = sess.finished ? "Gracias" : "Listo"; }
 }
 function closeSession() { if (playing) stopAudio(); sess.open = false; sess.started = false; $("#sess").classList.remove("open"); render(); }
 $("#sDur").addEventListener("click", (e) => { const b = e.target.closest("[data-min]"); if (b) { sess.minutes = +b.dataset.min; renderSession(); } });
 $("#sGo").addEventListener("click", () => {
-  if (sess.finished) { closeSession(); return; }
+  if (sess.finished) { const go = !(S.days[sess.idx] && S.days[sess.idx].step) && sess.idx === todayIdx(); closeSession(); if (go) openStep(todayIdx()); return; }
   if (sess.started) { closeSession(); return; }
   sess.started = true; renderSession();
   const d = S.days[sess.idx] = S.days[sess.idx] || {}; d.audio = true; save();
@@ -484,6 +568,7 @@ function render() {
   v.innerHTML = view === "dia" ? vDia() : view === "programa" ? vPrograma() : view === "realidad" ? vRealidad() : view === "ajustes" ? vAjustes() : vInicio();
   const cv = $("#cv"), cd = view === "dia" ? draft : (S && S.data); if (cv && cd && (cd.escenas || []).length === 3) { (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => drawCollage(cv, cd)); }
   window.scrollTo(0, 0);
+  maybeWelcome();
 }
 
 function vInicio() {
@@ -498,13 +583,19 @@ function vInicio() {
       '<section class="card"><div class="lbl">Mi objetivo</div><p>' + esc(objetivoTxt()) + '</p><div class="lbl">Mi frase nueva</div><p class="phrase">' + esc(d.fraseNueva || "") + '</p><div class="lbl">Mi plan</div>' + (d.plan || []).map(p => '<p class="small">• ' + esc(p.t) + " <span class=\"muted\">(" + CUANDO_N[p.cuando] + ")</span></p>").join("") + '</section>' +
       '<button class="btn full" type="button" data-act="again">Empezar otro ciclo de 9 días</button>';
   }
-  const i = todayIdx(), ph = phaseOf(i), dy = DAYS[i], day = S.days[i] || {}, ok = dayDone(i);
-  return n + '<header class="hero" data-phase="' + ph.id + '"><div class="kicker">' + ph.tag + " · " + ph.name + '</div><h1>Día ' + (i + 1) + ' <em>de 9</em></h1><p class="muted">' + esc(dy.t) + ". " + esc(dy.intro) + "</p></header>" + dots() +
-    '<section class="card" data-phase="' + ph.id + '">' +
-    '<div class="task' + (day.audio ? " done" : "") + '"><span class="num">' + (day.audio ? "✓" : "1") + '</span><div><h4>Sesión de audio</h4><p>' + ph.track.name + " · " + ph.track.band + '</p></div><button class="mini' + (day.audio ? "" : " on") + '" type="button" data-act="session">' + (day.audio ? "Repetir" : "Empezar") + "</button></div>" +
-    '<div class="task' + (day.step ? " done" : "") + '"><span class="num">' + (day.step ? "✓" : "2") + '</span><div><h4>Paso del día</h4><p>' + esc(dy.t) + '</p></div><button class="mini' + (day.step ? "" : " on") + '" type="button" data-act="step">' + (day.step ? "Ver" : "Abrir") + "</button></div>" +
-    '<div class="task' + (day.challenge ? " done" : "") + '"><span class="num">' + (day.challenge ? "✓" : "3") + '</span><div><h4>Acción real</h4><p>' + esc(dy.ch) + '</p></div><button class="mini' + (day.challenge ? " on" : "") + '" type="button" data-act="challenge">' + (day.challenge ? "Hecha" : "Lo hice") + "</button></div></section>" +
-    (ok ? '<div class="note">Día ' + (i + 1) + " completo. Vuelve mañana para el día " + (i + 2 > 9 ? "final" : i + 2) + ". Si pasa un día sin completarlo, el programa vuelve al día 1.</div>" : '<div class="note">Para completar el día necesitas la sesión de audio y el paso del día. La acción real cuenta aparte.</div>');
+  const i = todayIdx(), ph = phaseOf(i), dy = DAYS[i], dx = DAYX[i], day = S.days[i] || {}, ok = dayDone(i);
+  const fin = [0, 1, 2, 3, 4, 5, 6, 7, 8].filter(dayDone).length, C = 2 * Math.PI * 30, nowIdx = !day.audio ? 0 : !day.step ? 1 : !day.challenge ? 2 : -1;
+  const tasks = [
+    { ic: "audio", t: "Sesión de audio", m: dx.mins[0], line: dx.how[0], sub: ph.track.name + " · " + ph.track.band, on: day.audio, act: "session", lab: day.audio ? "Repetir" : "Empezar" },
+    { ic: "paso", t: "Paso del día", m: dx.mins[1], line: dx.how[1], sub: dy.t, on: day.step, act: "step", lab: day.step ? "Ver" : "Abrir" },
+    { ic: "accion", t: "Acción real", m: dx.mins[2], line: dx.how[2], sub: "Cuenta aparte: no bloquea el día", on: day.challenge, act: "challenge", lab: day.challenge ? "Hecha" : "Lo hice" }
+  ];
+  return n + '<section class="dayhero" data-phase="' + ph.id + '"><div class="dh-top"><div><div class="kicker">' + ph.tag + " · " + ph.name + '</div><h1>Día ' + (i + 1) + '</h1></div>' +
+    '<svg class="ringsvg" viewBox="0 0 74 74" role="img" aria-label="' + fin + ' de 9 días completos"><circle class="bg" cx="37" cy="37" r="30"/><circle class="fg" cx="37" cy="37" r="30" stroke-dasharray="' + (C * fin / 9).toFixed(1) + " " + C.toFixed(1) + '"/><text x="37" y="38">' + fin + "/9</text></svg></div>" +
+    '<h2 class="headline">' + esc(dx.h) + '</h2><p class="muted">' + esc(dx.why) + '</p><button class="linkbtn" type="button" data-act="welcome">¿Cómo funciona?</button></section>' +
+    (ok ? '<section class="celebrate" data-phase="' + ph.id + '"><div class="big">¡Día ' + (i + 1) + ' completo!</div><p class="muted">' + (i < 8 ? "Mañana: " + esc(DAYX[i + 1].h) + "." : "Mañana cierras tu programa.") + ' Si pasa un día sin completarlo, el programa vuelve al día 1.</p></section>' : "") +
+    '<section class="tl" data-phase="' + ph.id + '">' + tasks.map((t, k) => '<div class="tcard' + (t.on ? " done" : k === nowIdx ? " now" : "") + '"><div class="ico">' + svg(t.on ? "check" : t.ic) + '</div><div class="tc-body"><div class="tc-top"><h4>' + t.t + '</h4><span class="tc-min">' + t.m + ' min</span></div><p>' + esc(t.line) + '</p><p class="small">' + esc(t.sub) + '</p><div class="row"><button class="mini' + (t.on || k === nowIdx ? " on" : "") + '" type="button" data-act="' + t.act + '">' + t.lab + "</button>" + (t.on ? '<span class="tc-state">Hecho</span>' : k === nowIdx ? '<span class="tc-state">Ahora</span>' : "") + "</div></div></div>").join("") + "</section>" +
+    (ok ? "" : '<p class="muted small">Para completar el día necesitas la sesión de audio y el paso del día. La acción real cuenta aparte.</p>');
 }
 
 function vPrograma() {
@@ -558,7 +649,7 @@ const coherenceTip = (c) => { const t = [];
 function openStep(i) { stepIdx = i; draft = JSON.parse(JSON.stringify(S.data || {})); if (i === 2 && !(draft.escenas || []).length && pilar()) draft.escenas = pilar().scenes.slice(0, 3); view = "dia"; render(); }
 function vDia() {
   const i = stepIdx, dy = DAYS[i], ph = phaseOf(i), d = draft, p = PILARES.find(x => x.id === d.pilar), b = BLOCKS.find(x => x.id === d.bloqueo), ro = i < todayIdx() || (S.days[i] && S.days[i].step && i !== todayIdx());
-  let h = '<button class="back" type="button" data-act="back">← Volver</button><header class="hero" data-phase="' + ph.id + '"><div class="kicker">Día ' + (i + 1) + " · " + ph.name + "</div><h2>" + esc(dy.t) + '</h2><p class="muted">' + esc(dy.intro) + "</p></header><section class=\"card\" data-phase=\"" + ph.id + '">';
+  let h = '<button class="back" type="button" data-act="back">← Volver</button><header class="hero" data-phase="' + ph.id + '"><div class="kicker">Día ' + (i + 1) + " · " + ph.name + "</div><h2>" + esc(dy.t) + '</h2><p class="muted">' + esc(dy.intro) + "</p></header><div class=\"whybanner\" data-phase=\"" + ph.id + '"><div class="ico">' + svg("sol") + "</div><div><b>Para qué</b><p>" + esc(DAYX[i].why) + "</p><p class=\"small muted\">Qué haces: " + esc(DAYX[i].how[1]) + "</p></div></div><section class=\"card\" data-phase=\"" + ph.id + '">';
   if (dy.kind === "goal") {
     h += '<div class="lbl">¿Cómo te llamas?</div><input class="field" data-in="nombre" maxlength="30" placeholder="Tu nombre" value="' + esc(d.nombre || "") + '">' +
       '<div class="lbl">Elige tu pilar</div><div class="row">' + chips("pilar", PILARES.map(x => [x.id, x.name]), d.pilar) + "</div>";
@@ -609,12 +700,34 @@ function stepValid() {
 let tmr = null;
 function timerBtn(sec) { return '<div class="row" style="margin-top:8px"><button class="btn ghost" type="button" data-act="timer" data-v="' + sec + '">Iniciar temporizador (' + fmt(sec) + ')</button></div>'; }
 
+/* ============ Bienvenida ============ */
+let wel = { open: false, n: 0 };
+const welSeen = () => store.get("e23_welcome", false);
+function openWelcome() { wel = { open: true, n: 0 }; $("#welcome").classList.add("open"); renderWelcome(); }
+function closeWelcome() { wel.open = false; $("#welcome").classList.remove("open"); store.set("e23_welcome", true); render(); }
+function renderWelcome() {
+  const n = wel.n, W = $("#welBox");
+  const screens = [
+    '<div class="wel-body"><div class="kicker">Bienvenida</div><h1>Hoy empieza <em style="color:var(--ver)">tu cambio</em></h1><p class="muted">Expansión 23 son 9 días para alinear tres cosas. Cada día toma unos 20 minutos y siempre sabrás qué hacer.</p>' +
+    [["energia", "Energía", "Audios y respiración que calman tu cuerpo.", "ver"], ["mente", "Mente", "Cambias la frase vieja que te frena por una nueva.", "sentir"], ["accion", "Acción", "Un plan concreto y un paso real cada día.", "actuar"]].map(r => '<div class="wrow" data-phase="' + r[3] + '"><div class="ico">' + svg(r[0]) + "</div><div><h4>" + r[1] + "</h4><p>" + r[2] + "</p></div></div>").join("") + "</div>",
+    '<div class="wel-body"><div class="kicker">Día 1</div><h1>Tu día 1 en <em style="color:var(--ver)">tres pasos</em></h1>' +
+    [["audio", "Sesión de audio", "15 min", "Respira con el círculo y piensa en tu objetivo como si ya fuera real. El texto te guía."], ["paso", "Tu punto de partida", "3 min", "Eliges tu pilar, tu objetivo y tres cualidades de la persona que quieres ser."], ["accion", "Una acción real", "5 min", "Le cuentas tu objetivo a alguien de confianza. Decirlo en voz alta lo vuelve real."]].map(r => '<div class="tcard now" data-phase="ver" style="margin:0"><div class="ico">' + svg(r[0]) + '</div><div class="tc-body"><div class="tc-top"><h4>' + r[1] + '</h4><span class="tc-min">' + r[2] + "</span></div><p>" + r[3] + "</p></div></div>").join("") + "</div>",
+    '<div class="wel-body"><div class="kicker">Antes de empezar</div><h1>Prepara tu <em style="color:var(--ver)">espacio</em></h1>' +
+    [["Audífonos puestos", "Con ellos se percibe mejor el pulso del audio."], ["Un lugar tranquilo", "Sin notificaciones ni interrupciones."], ["Unos 20 minutos para ti", "Este tiempo es parte de tu cambio."]].map(r => '<div class="wrow" data-phase="ver"><div class="ico">' + svg("check") + "</div><div><h4>" + r[0] + "</h4><p>" + r[1] + "</p></div></div>").join("") + "</div>"
+  ];
+  W.innerHTML = screens[n] + '<div class="wnav"><div class="wdots">' + [0, 1, 2].map(k => '<i class="' + (k === n ? "on" : "") + '"></i>').join("") + '</div><button class="btn full" type="button" data-w="next" data-phase="ver">' + (n === 2 ? "Empezar mi día 1" : "Siguiente") + "</button>" + (n > 0 ? '<button class="back" type="button" data-w="prev" style="justify-self:center">Atrás</button>' : '<button class="back" type="button" data-w="skip" style="justify-self:center">Saltar</button>') + "</div>";
+}
+$("#welBox").addEventListener("click", (e) => { const b = e.target.closest("[data-w]"); if (!b) return; const w = b.dataset.w;
+  if (w === "next") { if (wel.n === 2) closeWelcome(); else { wel.n++; renderWelcome(); } } else if (w === "prev") { wel.n--; renderWelcome(); } else if (w === "skip") closeWelcome(); });
+function maybeWelcome() { if (!wel.open && !sess.open && view === "inicio" && S && !S.done && todayIdx() === 0 && !welSeen()) openWelcome(); }
+
 /* ============ Eventos ============ */
 $("#view").addEventListener("input", (e) => { const k = e.target.dataset.in; if (k) { draft[k] = e.target.value; const b = $('[data-act="savestep"]'); if (b) b.disabled = !stepValid(); } });
 $("#view").addEventListener("change", (e) => { if (e.target.id === "fotoIn" && e.target.files[0]) { const f = e.target.files[0]; e.target.value = ""; setFoto(f); } });
 $("#view").addEventListener("click", (e) => {
   const a = e.target.closest("[data-act]"); if (!a) return; const act = a.dataset.act, v = a.dataset.v;
-  if (act === "begin") { S = newState(); save(); render(); }
+  if (act === "welcome") openWelcome();
+  else if (act === "begin") { S = newState(); save(); render(); }
   else if (act === "again") { S = { ...newState(S), cycles: (S.cycles || 0) + 1 }; save(); render(); }
   else if (act === "session") openSession();
   else if (act === "step") openStep(todayIdx());
