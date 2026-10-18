@@ -150,6 +150,9 @@ nav.bar button[aria-current="page"] svg { stroke: var(--ver); }
 .sess .row { justify-content: center; }
 input[type=range] { width: 100%; accent-color: var(--accent); }
 
+.pbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 4; background: var(--surface-2); border: 1px solid var(--sentir); border-radius: 16px; padding: 12px 14px; display: grid; gap: 8px; margin-bottom: 4px; }
+.pbar .kicker { color: var(--sentir); }
+.pbar .chip { padding: 6px 11px; font-size: 14px; }
 .ico { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; flex: none; color: var(--on-accent); background: var(--accent); }
 .ico svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .dayhero { border-radius: 22px; padding: 22px 20px; display: grid; gap: 12px; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
@@ -311,22 +314,34 @@ const CUANDO = [["hoy", "Hoy"], ["manana", "Mañana"], ["tres", "En 3 días"], [
 const CUANDO_N = Object.fromEntries(CUANDO);
 
 /* ============ Estado ============ */
+let PREVIEW = store.get("e23_preview", false), REAL = null;
 let S = store.get("e23_state", null);
+if (PREVIEW) { REAL = S; S = store.get("e23_pstate", null) || makePreview(0); }
 let view = "inicio";
 let stepIdx = null;
 let draft = {};
 let askMode = "";
 let fotoImg = null;
 
-const save = () => store.set("e23_state", S);
+const save = () => store.set(PREVIEW ? "e23_pstate" : "e23_state", S);
 const newState = (keep) => ({ start: dayKey(), days: {}, data: keep ? keep.data : {}, restarts: keep ? keep.restarts : 0, cycles: keep ? keep.cycles : 0, note: "", done: false });
+const FIELDS = [["nombre", "pilar", "objetivo", "objetivoCustom", "rasgos"], ["bloqueo", "intensidad", "fraseNueva"], ["escenas"], ["ancla"], ["antes", "despues"], ["compromiso"], ["coherencia"], ["plan"], ["hecho", "proximo"]];
+function makePreview(i, doneAll) {
+  const real = REAL || store.get("e23_state", null), rd = (real && real.data) || {}, p0 = PILARES[0];
+  const sample = { nombre: "Tu nombre", pilar: p0.id, objetivo: p0.goals[1], objetivoCustom: "", rasgos: ["Calma", "Valentía", "Gratitud"], bloqueo: "tiempo", intensidad: "3", fraseNueva: BLOCKS[1].nw[0], escenas: p0.scenes.slice(0, 3), ancla: "si", antes: "2", despues: "4", compromiso: COMMIT[1], coherencia: { energia: "algunos", mente: "3", accion: "pequeno" }, plan: [{ t: p0.acts[0], cuando: "hoy" }, { t: p0.acts[1], cuando: "manana" }, { t: p0.acts[2], cuando: "semana" }], hecho: [], proximo: "" };
+  const data = { ...sample }; Object.keys(rd).forEach(k => { const v = rd[k]; if (v && (!Array.isArray(v) || v.length)) data[k] = v; });
+  if (!doneAll) for (let d = i; d < 9; d++) FIELDS[d].forEach(k => { delete data[k]; });
+  if (i > 0 || doneAll) data.pilar = data.pilar || p0.id;
+  const days = {}; for (let j = 0; j < (doneAll ? 9 : i); j++) days[j] = { audio: true, step: true };
+  return { start: dayKey(), days, data, restarts: 0, cycles: 0, note: "", done: !!doneAll, pday: doneAll ? 8 : i };
+}
 const dayDone = (i) => { const d = S.days[i]; return !!(d && d.audio && d.step); };
-const todayIdx = () => Math.min(daysBetween(S.start, dayKey()), 8);
+const todayIdx = () => PREVIEW ? (S.pday | 0) : Math.min(daysBetween(S.start, dayKey()), 8);
 const phaseOf = (i) => PHASES[Math.floor(i / 3)];
 const pilar = () => PILARES.find(p => p.id === (S.data || {}).pilar);
 
 function check() {
-  if (!S || S.done) return;
+  if (PREVIEW || !S || S.done) return;
   const idx = daysBetween(S.start, dayKey());
   for (let i = 0; i < Math.min(idx, 9); i++) {
     if (!dayDone(i)) {
@@ -561,11 +576,17 @@ const chips = (k, opts, sel, max) => opts.map(o => { const v = Array.isArray(o) 
 const dots = () => '<div class="dots">' + [0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => '<i class="' + (dayDone(i) ? "ok" : i === todayIdx() && !S.done ? "now" : "") + '"></i>').join("") + "</div>";
 const NAV = [["inicio", "Inicio", '<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>'], ["programa", "Programa", '<rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/>'], ["realidad", "Mi realidad", '<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>'], ["ajustes", "Ajustes", '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>']];
 
+function previewBar() {
+  if (!PREVIEW) return "";
+  return '<div class="pbar"><div class="kicker">Modo prueba · tu progreso real no cambia</div><div class="row">' +
+    [0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => '<button class="chip" type="button" data-act="pday" data-v="' + i + '" aria-pressed="' + (!S.done && todayIdx() === i) + '">' + (i + 1) + "</button>").join("") +
+    '<button class="chip" type="button" data-act="pday" data-v="fin" aria-pressed="' + !!S.done + '">Cierre</button></div><button class="linkbtn" type="button" data-act="pexit" style="color:var(--sentir)">Salir del modo prueba</button></div>';
+}
 function render() {
   check();
   $("#nav").innerHTML = NAV.map(([id, n, p]) => '<button type="button" data-nav="' + id + '"' + (view === id || (view === "dia" && id === "inicio") ? ' aria-current="page"' : "") + '><svg viewBox="0 0 24 24" aria-hidden="true">' + p + "</svg>" + n + "</button>").join("");
   const v = $("#view");
-  v.innerHTML = view === "dia" ? vDia() : view === "programa" ? vPrograma() : view === "realidad" ? vRealidad() : view === "ajustes" ? vAjustes() : vInicio();
+  v.innerHTML = previewBar() + (view === "dia" ? vDia() : view === "programa" ? vPrograma() : view === "realidad" ? vRealidad() : view === "ajustes" ? vAjustes() : vInicio());
   const cv = $("#cv"), cd = view === "dia" ? draft : (S && S.data); if (cv && cd && (cd.escenas || []).length === 3) { (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => drawCollage(cv, cd)); }
   window.scrollTo(0, 0);
   maybeWelcome();
@@ -602,7 +623,7 @@ function vPrograma() {
   if (!S) return '<header class="hero"><h1>Programa</h1><p class="muted">Empieza el programa desde Inicio para ver tus 9 días.</p></header>';
   const ti = todayIdx();
   return '<header class="hero"><div class="kicker">Tus 9 días</div><h1>Programa</h1></header>' + dots() + PHASES.map(ph => '<section class="phase" data-phase="' + ph.id + '"><h3>' + ph.name + "<span>" + ph.tag + '</span></h3><p class="muted small">' + ph.line + "</p>" +
-    ph.days.map(i => { const locked = i > ti && !S.done, st = dayDone(i) ? '<span class="badge ok">Hecho</span>' : i === ti ? '<span class="badge ok">Hoy</span>' : '<span class="badge">Bloqueado</span>';
+    ph.days.map(i => { const locked = i > ti && !S.done && !PREVIEW, st = dayDone(i) ? '<span class="badge ok">Hecho</span>' : i === ti ? '<span class="badge ok">Hoy</span>' : '<span class="badge">Bloqueado</span>';
       return '<details class="day' + (locked ? " locked" : "") + '"' + (locked ? ' onclick="return false"' : "") + "><summary><span class=\"num\" style=\"width:30px;height:30px\">" + (i + 1) + "</span><span>" + esc(DAYS[i].t) + "</span>" + st + '</summary><div class="body"><p>' + esc(DAYS[i].intro) + "</p>" + summaryDay(i) + "</div></details>"; }).join("") + "</section>").join("");
 }
 function summaryDay(i) {
@@ -630,6 +651,13 @@ function vRealidad() {
 }
 
 function vAjustes() {
+  let h = vAjustesFull();
+  const card = PREVIEW ? '<section class="card"><h3>Modo prueba activo</h3><p class="muted small">Estás viendo el programa con datos de ejemplo. Tu progreso real está guardado aparte y no cambia.</p><button class="btn warn" type="button" data-act="pexit">Salir del modo prueba</button></section>'
+    : '<section class="card"><h3>Modo prueba</h3><p class="muted small">Desbloquea los 9 días para recorrer toda la app y ver cómo se ve cada uno. No toca tu progreso real y puedes salir cuando quieras.</p><button class="btn ghost" type="button" data-act="pon">Activar modo prueba</button></section>';
+  if (PREVIEW) h = h.replace(/<section class="card"><h3>Programa<\/h3>[\s\S]*?<\/section>/, "").replace(/<section class="card"><h3>Mis datos<\/h3>[\s\S]*?<\/section>/, "");
+  return h.replace('<p class="muted small">Es una herramienta', card + '<p class="muted small">Es una herramienta');
+}
+function vAjustesFull() {
   const th = store.get("e23_theme", "auto");
   return '<header class="hero"><div class="kicker">Ajustes</div><h1>Ajustes</h1></header>' +
     '<section class="card"><h3>Tema</h3><div class="row">' + [["auto", "Automático"], ["light", "Claro"], ["dark", "Oscuro"]].map(([k, n]) => '<button class="chip" type="button" data-act="theme" data-v="' + k + '" aria-pressed="' + (th === k) + '">' + n + "</button>").join("") + "</div></section>" +
@@ -719,14 +747,17 @@ function renderWelcome() {
 }
 $("#welBox").addEventListener("click", (e) => { const b = e.target.closest("[data-w]"); if (!b) return; const w = b.dataset.w;
   if (w === "next") { if (wel.n === 2) closeWelcome(); else { wel.n++; renderWelcome(); } } else if (w === "prev") { wel.n--; renderWelcome(); } else if (w === "skip") closeWelcome(); });
-function maybeWelcome() { if (!wel.open && !sess.open && view === "inicio" && S && !S.done && todayIdx() === 0 && !welSeen()) openWelcome(); }
+function maybeWelcome() { if (!PREVIEW && !wel.open && !sess.open && view === "inicio" && S && !S.done && todayIdx() === 0 && !welSeen()) openWelcome(); }
 
 /* ============ Eventos ============ */
 $("#view").addEventListener("input", (e) => { const k = e.target.dataset.in; if (k) { draft[k] = e.target.value; const b = $('[data-act="savestep"]'); if (b) b.disabled = !stepValid(); } });
 $("#view").addEventListener("change", (e) => { if (e.target.id === "fotoIn" && e.target.files[0]) { const f = e.target.files[0]; e.target.value = ""; setFoto(f); } });
 $("#view").addEventListener("click", (e) => {
   const a = e.target.closest("[data-act]"); if (!a) return; const act = a.dataset.act, v = a.dataset.v;
-  if (act === "welcome") openWelcome();
+  if (act === "pon") { REAL = S; PREVIEW = true; store.set("e23_preview", true); S = makePreview(0); save(); view = "inicio"; render(); }
+  else if (act === "pexit") { PREVIEW = false; store.set("e23_preview", false); try { localStorage.removeItem("e23_pstate"); } catch (e2) {} S = store.get("e23_state", null); REAL = null; view = "inicio"; render(); }
+  else if (act === "pday") { S = v === "fin" ? makePreview(8, true) : makePreview(+v); save(); view = "inicio"; render(); }
+  else if (act === "welcome") openWelcome();
   else if (act === "begin") { S = newState(); save(); render(); }
   else if (act === "again") { S = { ...newState(S), cycles: (S.cycles || 0) + 1 }; save(); render(); }
   else if (act === "session") openSession();
