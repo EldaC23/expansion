@@ -1,0 +1,11 @@
+Banco de imágenes de Expansión 23
+
+Aquí van las imágenes del collage, creadas con Gemini. Cada archivo se llama
+pilar-escena.jpg, en minúsculas y sin tildes. Tamaño recomendado: 1200 x 900 px
+(horizontal 4:3), JPG, menos de 250 KB cada una.
+
+dinero:    dinero-ciudad.jpg   dinero-amanecer.jpg   dinero-camino.jpg    dinero-hogar.jpg
+pareja:    pareja-mar.jpg      pareja-hogar.jpg      pareja-estrellas.jpg pareja-bosque.jpg
+cuerpo:    cuerpo-amanecer.jpg cuerpo-montana.jpg    cuerpo-bosque.jpg    cuerpo-mar.jpg
+libertad:  libertad-mar.jpg    libertad-montana.jpg  libertad-camino.jpg  libertad-ciudad.jpg
+proposito: proposito-estrellas.jpg proposito-camino.jpg proposito-amanecer.jpg proposito-ciudad.jpg
