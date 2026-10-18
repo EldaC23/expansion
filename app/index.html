@@ -357,14 +357,14 @@ let view = "inicio";
 let stepIdx = null;
 let draft = {};
 let askMode = "";
-let fotoImg = null;
+let fotoImg = null, fotos = {};
 
 const save = () => store.set(PREVIEW ? "e23_pstate" : "e23_state", S);
 const newState = (keep) => ({ start: dayKey(), days: {}, data: keep ? keep.data : {}, restarts: keep ? keep.restarts : 0, cycles: keep ? keep.cycles : 0, note: "", done: false });
-const FIELDS = [["nombre", "pilar", "objetivo", "objetivoCustom", "rasgos"], ["bloqueo", "intensidad", "fraseNueva"], ["escenas"], ["pensamiento", "creeAntes", "evidencia", "evidSi", "evidNo", "neutra", "soltar", "creeDespues"], ["miedoAntes", "accionMiedo", "peor", "prob", "veces", "planPractico", "superado", "mejor", "probable", "valentia", "ensayo", "miniAccion", "miedoDespues"], ["compromiso", "reemplazo", "calma"], ["reto", "decision", "ensayoDecision", "primerGesto"], ["tamano", "plan", "ensayoPlan"], ["hecho", "proximo", "cierre", "aprendi"]];
+const FIELDS = [["nombre", "pilar", "objetivo", "objetivoCustom", "rasgos"], ["bloqueo", "intensidad", "fraseNueva"], ["escenas", "frase"], ["pensamiento", "creeAntes", "evidencia", "evidSi", "evidNo", "neutra", "soltar", "creeDespues"], ["miedoAntes", "accionMiedo", "peor", "prob", "veces", "planPractico", "superado", "mejor", "probable", "valentia", "ensayo", "miniAccion", "miedoDespues"], ["compromiso", "reemplazo", "calma"], ["reto", "decision", "ensayoDecision", "primerGesto"], ["tamano", "plan", "ensayoPlan"], ["hecho", "proximo", "cierre", "aprendi"]];
 function makePreview(i, doneAll) {
   const real = REAL || store.get("e23_state", null), rd = (real && real.data) || {}, p0 = PILARES[0];
-  const sample = { nombre: "Tu nombre", pilar: p0.id, objetivo: p0.goals[1], objetivoCustom: "", rasgos: ["Calma", "Valentía", "Gratitud"], bloqueo: "tiempo", intensidad: "3", fraseNueva: BLOCKS[1].nw[0], escenas: p0.scenes.slice(0, 3), pensamiento: BLOCKS[1].old, creeAntes: "4", creeDespues: "2", soltar: "si", evidencia: "suposicion", evidSi: "", evidNo: "", neutra: BLOCKS[1].neu[0], miedoAntes: "4", accionMiedo: ACC_MIEDO[0], peor: PEOR[0], prob: "25", veces: "nunca", planPractico: PLANB[0], superado: SUPERADO[1], mejor: MEJOR[0], probable: PROBABLE[0], valentia: VALENTIA[0], ensayo: "si", miniAccion: MINI[0], miedoDespues: "2", compromiso: COMMIT[1], reemplazo: REEMPLAZOS[0], calma: "si", reto: RETOS[0], decision: DECIS[0], ensayoDecision: "si", primerGesto: PRIMER[0], tamano: "pequeno", ensayoPlan: "si", cierre: "si", aprendi: APREN[0], plan: [{ t: p0.acts[0], cuando: "hoy", pista: "Al terminar mi sesión", obst: "Cansancio" }, { t: p0.acts[1], cuando: "manana", pista: "Al terminar mi sesión", obst: "Cansancio" }, { t: p0.acts[2], cuando: "semana", pista: "Al terminar mi sesión", obst: "Cansancio" }], hecho: [], proximo: "" };
+  const sample = { frase: "", nombre: "Tu nombre", pilar: p0.id, objetivo: p0.goals[1], objetivoCustom: "", rasgos: ["Calma", "Valentía", "Gratitud"], bloqueo: "tiempo", intensidad: "3", fraseNueva: BLOCKS[1].nw[0], escenas: p0.scenes.slice(0, 3), pensamiento: BLOCKS[1].old, creeAntes: "4", creeDespues: "2", soltar: "si", evidencia: "suposicion", evidSi: "", evidNo: "", neutra: BLOCKS[1].neu[0], miedoAntes: "4", accionMiedo: ACC_MIEDO[0], peor: PEOR[0], prob: "25", veces: "nunca", planPractico: PLANB[0], superado: SUPERADO[1], mejor: MEJOR[0], probable: PROBABLE[0], valentia: VALENTIA[0], ensayo: "si", miniAccion: MINI[0], miedoDespues: "2", compromiso: COMMIT[1], reemplazo: REEMPLAZOS[0], calma: "si", reto: RETOS[0], decision: DECIS[0], ensayoDecision: "si", primerGesto: PRIMER[0], tamano: "pequeno", ensayoPlan: "si", cierre: "si", aprendi: APREN[0], plan: [{ t: p0.acts[0], cuando: "hoy", pista: "Al terminar mi sesión", obst: "Cansancio" }, { t: p0.acts[1], cuando: "manana", pista: "Al terminar mi sesión", obst: "Cansancio" }, { t: p0.acts[2], cuando: "semana", pista: "Al terminar mi sesión", obst: "Cansancio" }], hecho: [], proximo: "" };
   const data = { ...sample }; Object.keys(rd).forEach(k => { const v = rd[k]; if (v && (!Array.isArray(v) || v.length)) data[k] = v; });
   if (!doneAll) for (let d = i; d < 9; d++) FIELDS[d].forEach(k => { delete data[k]; });
   if (i > 0 || doneAll) data.pilar = data.pilar || p0.id;
@@ -576,19 +576,65 @@ function wrapText(g, text, x, y, maxW, lh, maxLines) {
   if (line && n < maxLines) { g.fillText(line, x, y + n * lh); n++; } return n;
 }
 function circleClip(g, cx, cy, r) { g.beginPath(); g.arc(cx, cy, r, 0, 7); g.clip(); }
-function drawCollage(canvas, d) {
-  const W = 1080, H = 1350, sc = d.escenas || []; canvas.width = W; canvas.height = H; const g = canvas.getContext("2d");
-  drawScene(g, sc[0] || "amanecer", 0, 0, W, H, 11);
-  const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "rgba(8,6,20,.6)"); gr.addColorStop(.35, "rgba(8,6,20,.05)"); gr.addColorStop(.6, "rgba(8,6,20,.45)"); gr.addColorStop(1, "rgba(8,6,20,.88)"); g.fillStyle = gr; g.fillRect(0, 0, W, H);
-  g.fillStyle = "#fff"; g.textBaseline = "alphabetic";
-  g.font = '500 28px "DM Mono", monospace'; try { g.letterSpacing = "6px"; } catch (e) {} g.fillText("EXPANSIÓN 23", 60, 96); try { g.letterSpacing = "0px"; } catch (e) {}
-  let fs = 96; g.font = 'italic 400 ' + fs + 'px "Newsreader", Georgia, serif'; while (g.measureText(d.nombre || "").width > 960 && fs > 40) { fs -= 4; g.font = 'italic 400 ' + fs + 'px "Newsreader", Georgia, serif'; }
-  g.fillText(d.nombre || "", 60, 205);
-  g.font = '400 42px "Outfit", system-ui, sans-serif'; wrapText(g, objetivoTxt(d), 60, 270, 960, 54, 3);
-  if (fotoImg) { g.save(); circleClip(g, 540, 640, 170); const s = Math.min(fotoImg.width, fotoImg.height); g.drawImage(fotoImg, (fotoImg.width - s) / 2, (fotoImg.height - s) / 2, s, s, 370, 470, 340, 340); g.restore(); g.strokeStyle = "#f0bd5c"; g.lineWidth = 8; g.beginPath(); g.arc(540, 640, 174, 0, 7); g.stroke(); }
-  [[1, 60], [2, 560]].forEach(([i, x]) => { drawScene(g, sc[i] || "mar", x, 830, 460, 300, 20 + i); g.strokeStyle = "rgba(255,255,255,.5)"; g.lineWidth = 2; g.strokeRect(x, 830, 460, 300); });
-  g.fillStyle = "#f0bd5c"; g.font = '500 30px "DM Mono", monospace'; g.fillText(("SOY · " + (d.rasgos || []).join(" · ")).toUpperCase(), 60, 1186);
-  g.fillStyle = "#fff"; g.font = 'italic 400 44px "Newsreader", Georgia, serif'; wrapText(g, "“" + (d.fraseNueva || "") + "”", 60, 1246, 960, 52, 2);
+const THEMES = {
+  dinero: { bg: ["#fde9a8", "#f6b17a"], bd: "#b8791a", band: "#fff1c2", txt: "#8a3d00" },
+  pareja: { bg: ["#ffd9e4", "#ffb8c9"], bd: "#c2456a", band: "#ffeef3", txt: "#9b1f48" },
+  cuerpo: { bg: ["#d6f5e4", "#9fe0c4"], bd: "#1f8a68", band: "#effcf5", txt: "#14624a" },
+  libertad: { bg: ["#d3ecff", "#8fd0f0"], bd: "#1f77b4", band: "#eef8ff", txt: "#0f4c81" },
+  proposito: { bg: ["#e6dcff", "#c3a9f2"], bd: "#6a47c4", band: "#f4eeff", txt: "#4b2a99" }
+};
+const PHRASES = {
+  dinero: ["El dinero fluye hacia mí con facilidad y yo lo recibo con gratitud", "Soy un canal de abundancia: lo que doy vuelve multiplicado", "Mi trabajo me da libertad, tranquilidad y prosperidad", "Merezco la abundancia que estoy creando", "Cada día mis ingresos crecen y mi vida se expande"],
+  pareja: ["Atraigo y construyo relaciones sanas, amorosas y estables", "Me amo, me respeto y el amor me encuentra", "Mis vínculos me nutren y los cuido con gratitud", "Doy y recibo amor con tranquilidad y confianza", "Mi hogar está lleno de amor y complicidad"],
+  cuerpo: ["Mi cuerpo es fuerte, sano y está lleno de energía", "Cada día me muevo, me nutro y me cuido con amor", "Mi cuerpo descansa profundo y despierta renovado", "Estoy en calma y mi salud se fortalece cada día", "Me siento bien en mi cuerpo y lo celebro"],
+  libertad: ["Soy libre de elegir cómo uso mi tiempo y dónde vivo", "Mi vida es ligera, libre y llena de viajes", "Trabajo desde donde me siento feliz y en paz", "Cada día elijo mi libertad con gratitud", "Mi tiempo y mi vida me pertenecen"],
+  proposito: ["Mi propósito se despliega con claridad y doy cada paso", "Lo que creo ayuda a muchas personas y me llena de sentido", "Soy capaz de crear y compartir lo que vine a hacer", "Cada día mi talento se expande y llega a más personas", "Confío en mi camino y actúo con valentía"]
+};
+const fraseDe = (d) => { if ((d.frase || "").trim()) return d.frase.trim(); const pl = PILARES.find(x => x.id === d.pilar); if (!pl) return ""; const gi = Math.max(0, pl.goals.indexOf(d.objetivo)); return PHRASES[pl.id][gi % PHRASES[pl.id].length]; };
+const bankCache = {};
+function bankImg(pilarId, scene) {
+  const k = pilarId + "-" + scene;
+  if (!bankCache[k]) bankCache[k] = new Promise((res) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = "img/" + k + ".jpg"; });
+  return bankCache[k];
+}
+function roundPath(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+function drawCover(g, im, x, y, w, h, r, bd) {
+  g.save(); roundPath(g, x, y, w, h, r); g.clip();
+  const s = Math.max(w / im.width, h / im.height), dw = im.width * s, dh = im.height * s; g.drawImage(im, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh); g.restore();
+  g.save(); g.lineWidth = 8; g.strokeStyle = bd; roundPath(g, x, y, w, h, r); g.stroke(); g.restore();
+}
+function fitLines(g, text, maxW, maxH, start, min, fam) {
+  for (let px = start; px >= min; px -= 2) {
+    g.font = fam.replace("{px}", px);
+    const words = text.split(/\s+/), lines = []; let line = "";
+    words.forEach(w => { const t = line ? line + " " + w : w; if (g.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; });
+    if (line) lines.push(line);
+    if (lines.length * px * 1.22 <= maxH) return { lines, px };
+  }
+  g.font = fam.replace("{px}", min); return { lines: [text], px: min };
+}
+let collageToken = 0;
+async function drawCollage(canvas, d) {
+  const token = ++collageToken, W = 1080, H = 1350, pil = d.pilar || "dinero", th = THEMES[pil] || THEMES.dinero, pl = PILARES.find(x => x.id === pil) || PILARES[0];
+  const sc = (d.escenas || []).slice(0, 3), spare = pl.scenes.find(x => !sc.includes(x)) || pl.scenes[0];
+  const imgs = await Promise.all([bankImg(pil, spare), bankImg(pil, sc[0] || pl.scenes[0]), bankImg(pil, sc[1] || pl.scenes[1]), bankImg(pil, sc[2] || pl.scenes[2])]);
+  if (token !== collageToken) return;
+  const slots = [fotos.foto || imgs[0], fotos.foto1 || imgs[1], fotos.foto2 || imgs[2], fotos.foto3 || imgs[3]];
+  const fallbackScenes = [spare, sc[0], sc[1], sc[2]];
+  canvas.width = W; canvas.height = H; const g = canvas.getContext("2d");
+  const gr = g.createLinearGradient(0, 0, W, H); gr.addColorStop(0, th.bg[0]); gr.addColorStop(1, th.bg[1]); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  const geo = [[28, 28, 620, 982], [676, 28, 376, 314], [676, 362, 376, 314], [676, 696, 376, 314]];
+  geo.forEach(([x, y, w, h], i) => {
+    if (slots[i]) drawCover(g, slots[i], x, y, w, h, 40, th.bd);
+    else { g.save(); roundPath(g, x, y, w, h, 40); g.clip(); drawScene(g, fallbackScenes[i] || "amanecer", x, y, w, h, 11 + i); g.restore(); g.save(); g.lineWidth = 8; g.strokeStyle = th.bd; roundPath(g, x, y, w, h, 40); g.stroke(); g.restore(); }
+  });
+  // título
+  g.save(); g.textAlign = "center"; g.textBaseline = "middle"; g.font = 'italic 500 84px "Newsreader", Georgia, serif'; g.lineJoin = "round"; g.lineWidth = 14; g.strokeStyle = th.txt; g.strokeText("Mi Realidad", 338, 96); g.fillStyle = "#fff"; g.fillText("Mi Realidad", 338, 96); g.restore();
+  // franja de la frase
+  g.save(); roundPath(g, 28, 1040, 1024, 282, 40); g.fillStyle = th.band; g.fill(); g.lineWidth = 8; g.strokeStyle = th.bd; g.stroke(); g.restore();
+  const frase = fraseDe(d), fit = fitLines(g, frase, 940, 220, 62, 34, 'italic 500 {px}px "Newsreader", Georgia, serif');
+  g.fillStyle = th.txt; g.textAlign = "center"; g.textBaseline = "middle"; const lh = fit.px * 1.22, y0 = 1040 + 141 - (fit.lines.length - 1) * lh / 2;
+  fit.lines.forEach((l, i) => g.fillText(l, 540, y0 + i * lh)); g.textAlign = "left";
 }
 const objetivoTxt = (d) => { d = d || S.data || {}; return (d.objetivoCustom || "").trim() || d.objetivo || ""; };
 
@@ -596,15 +642,24 @@ const objetivoTxt = (d) => { d = d || S.data || {}; return (d.objetivoCustom || 
 const dbOpen = () => new Promise((res, rej) => { const r = indexedDB.open("e23", 1); r.onupgradeneeded = () => r.result.createObjectStore("kv"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
 const dbDo = (mode, fn) => dbOpen().then(db => new Promise((res, rej) => { const q = fn(db.transaction("kv", mode).objectStore("kv")); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }));
 function blobToImage(blob) { return new Promise((res) => { const u = URL.createObjectURL(blob), im = new Image(); im.onload = () => { res(im); }; im.onerror = () => res(null); im.src = u; }); }
-async function loadFoto() { try { const b = await dbDo("readonly", s => s.get("foto")); fotoImg = b ? await blobToImage(b) : null; } catch (e) { fotoImg = null; } }
-async function setFoto(file) {
-  const im = await blobToImage(file); if (!im) return;
-  const s = Math.min(im.width, im.height), c = document.createElement("canvas"); c.width = c.height = 640;
-  c.getContext("2d").drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, 640, 640);
+const FOTO_KEYS = ["foto", "foto1", "foto2", "foto3"];
+async function loadFoto() { for (const k of FOTO_KEYS) { try { const b = await dbDo("readonly", s => s.get(k)); fotos[k] = b ? await blobToImage(b) : null; } catch (e) { fotos[k] = null; } } fotoImg = fotos.foto; }
+async function setFoto(file, key) {
+  key = key || "foto"; const im = await blobToImage(file); if (!im) return;
+  const sc = Math.min(1, 1400 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
+  c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
   const blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.85));
-  try { await dbDo("readwrite", s2 => s2.put(blob, "foto")); } catch (e) {} fotoImg = await blobToImage(blob); render();
+  try { await dbDo("readwrite", s2 => s2.put(blob, key)); } catch (e) {} fotos[key] = await blobToImage(blob); fotoImg = fotos.foto; renderKeep(window.scrollY);
 }
-async function delFoto() { try { await dbDo("readwrite", s => s.delete("foto")); } catch (e) {} fotoImg = null; render(); }
+async function delFoto(key) { key = key || "foto"; try { await dbDo("readwrite", s => s.delete(key)); } catch (e) {} fotos[key] = null; fotoImg = fotos.foto; renderKeep(window.scrollY); }
+function photoControls() {
+  const lab = (id, t, on) => '<label class="btn ghost" for="' + id + '" style="cursor:pointer">' + t + (on ? " ✓" : "") + "</label>";
+  const inp = FOTO_KEYS.map(k => '<input id="' + (k === "foto" ? "fotoIn" : "fotoIn" + k.slice(4)) + '" type="file" accept="image/*" hidden>').join("");
+  let h = '<div class="lbl">Tus fotos (opcional)</div><div class="row">' + lab("fotoIn", fotos.foto ? "Cambiar mi foto grande" : "Mi foto grande", fotos.foto) + (fotos.foto ? '<button class="btn ghost" type="button" data-act="delfoto" data-v="foto">Quitar</button>' : "") + "</div>";
+  h += '<p class="small muted">Si no subes una, se usa una imagen del banco. También puedes cambiar cada imagen pequeña por una foto tuya:</p><div class="row">';
+  [1, 2, 3].forEach(n => { h += lab("fotoIn" + n, "Foto " + n, fotos["foto" + n]) + (fotos["foto" + n] ? '<button class="x" type="button" data-act="delfoto" data-v="foto' + n + '" aria-label="Quitar foto ' + n + '">×</button>' : ""); });
+  return h + "</div>" + inp + '<p class="small muted">Tus fotos se guardan solo en este dispositivo.</p>';
+}
 
 /* ============ Vistas ============ */
 const chips = (k, opts, sel, max) => opts.map(o => { const v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o, on = Array.isArray(sel) ? sel.includes(v) : sel === v;
@@ -681,11 +736,10 @@ function summaryDay(i) {
 
 function vRealidad() {
   const d = (S && S.data) || {}, ready = S && (d.escenas || []).length === 3 && d.nombre;
-  if (!ready) return '<header class="hero"><div class="kicker">Mi realidad</div><h1>Tu collage</h1><p class="muted">Se arma el día 3 del programa, con tu objetivo, tus cualidades y tu frase nueva.</p></header>';
-  return '<header class="hero"><div class="kicker">Mi realidad</div><h1>Tu collage</h1><p class="muted small">Es un collage armado con tus respuestas, no una imagen de IA. Míralo unos minutos cada día con gratitud.</p></header>' +
+  if (!ready) return '<header class="hero"><div class="kicker">Mi realidad</div><h1>Tu collage</h1><p class="muted">Se arma el día 3 del programa, con tus fotos, imágenes de tu nueva vida y una frase de tu propósito.</p></header>';
+  return '<header class="hero"><div class="kicker">Mi realidad</div><h1>Tu collage</h1><p class="muted small">Míralo unos minutos cada día con gratitud.</p></header>' +
     '<canvas class="collage" id="cv" aria-label="Collage de tu nueva realidad"></canvas>' +
-    '<div class="row"><button class="btn" type="button" data-act="download">Descargar imagen</button><label class="btn ghost" for="fotoIn" style="cursor:pointer">' + (fotoImg ? "Cambiar mi foto" : "Añadir mi foto") + '</label>' + (fotoImg ? '<button class="btn ghost" type="button" data-act="delfoto">Quitar foto</button>' : "") + '</div><input id="fotoIn" type="file" accept="image/*" hidden>' +
-    '<p class="muted small">Tu foto se guarda solo en este dispositivo.</p>';
+    '<div class="row"><button class="btn" type="button" data-act="download">Descargar imagen</button></div>' + photoControls();
 }
 
 function vAjustes() {
@@ -708,11 +762,11 @@ function vAjustesFull() {
 
 /* ----- Paso del día ----- */
 const tamanoTip = (t) => ({ pequeno: "Tu plan es más pequeño que tu meta: añade una acción que te saque de tu zona cómoda.", justo: "Tu plan tiene el tamaño de tu meta. Sostén el ritmo.", sin: "Te falta un plan: elige hoy tus tres acciones." })[t];
-const oneLine = (k, opts, d, ph) => '<div class="row">' + chips(k, opts, d[k]) + '</div><input class="field" data-in="' + k + '" maxlength="100" placeholder="' + ph + '" value="' + esc(opts.includes(d[k]) ? "" : (d[k] || "")) + '">';
+const oneLine = (k, opts, d, ph, max) => '<div class="row">' + chips(k, opts, d[k]) + '</div><input class="field" data-in="' + k + '" maxlength="' + (max || 100) + '" placeholder="' + ph + '" value="' + esc(opts.includes(d[k]) ? "" : (d[k] || "")) + '">';
 const practica = (titulo, segs, pasos, key, d) => '<div class="tip"><p class="lbl">Práctica rápida · ' + esc(titulo) + "</p>" + pasos.map((t, i) => "<p>" + (i + 1) + ". " + esc(t) + "</p>").join("") + timerBtn(segs) + '</div><div class="row">' + chips(key, [["si", "Hice mi práctica"]], d[key]) + "</div>";
 const scale5 = (k, d) => '<div class="row">' + chips(k, [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(d[k] || "")) + "</div>";
 
-function openStep(i) { stepIdx = i; draft = JSON.parse(JSON.stringify(S.data || {})); if (i === 3 && !draft.pensamiento && draft.bloqueo) draft.pensamiento = BLOCKS.find(x => x.id === draft.bloqueo).old; if (i === 2 && !(draft.escenas || []).length && pilar()) draft.escenas = pilar().scenes.slice(0, 3); view = "dia"; render(); }
+function openStep(i) { stepIdx = i; draft = JSON.parse(JSON.stringify(S.data || {})); if (i === 3 && !draft.pensamiento && draft.bloqueo) draft.pensamiento = BLOCKS.find(x => x.id === draft.bloqueo).old; if (i === 2 && !(draft.escenas || []).length && pilar()) draft.escenas = pilar().scenes.slice(0, 3); if (i === 2 && !(draft.frase || "").trim() && draft.pilar) draft.frase = fraseDe(draft); view = "dia"; render(); }
 function vDia() {
   const i = stepIdx, dy = DAYS[i], ph = phaseOf(i), d = draft, p = PILARES.find(x => x.id === d.pilar), b = BLOCKS.find(x => x.id === d.bloqueo), ro = i < todayIdx() || (S.days[i] && S.days[i].step && i !== todayIdx());
   let h = '<button class="back" type="button" data-act="back">← Volver</button><header class="hero" data-phase="' + ph.id + '"><div class="kicker">Día ' + (i + 1) + " · " + ph.name + "</div><h2>" + esc(dy.t) + '</h2><p class="muted">' + esc(dy.intro) + "</p></header><div class=\"whybanner\" data-phase=\"" + ph.id + '"><div class="ico">' + svg("sol") + "</div><div><b>Para qué</b><p>" + esc(DAYX[i].why) + "</p><p class=\"small muted\">Qué haces: " + esc(DAYX[i].how[1]) + "</p></div></div><section class=\"card\" data-phase=\"" + ph.id + '">';
@@ -726,8 +780,13 @@ function vDia() {
     if (b) h += '<div class="lbl">Intensidad (1 suave, 5 muy fuerte)</div><div class="row">' + chips("intensidad", [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(d.intensidad || "")) + "</div>" +
       '<div class="lbl">Lo que me repetía</div><p class="old">' + esc(b.old) + '</p><div class="lbl">Lo nuevo que instalo</div><div class="row">' + chips("fraseNueva", b.nw, d.fraseNueva) + "</div>";
   } else if (dy.kind === "reality") {
-    h += p ? '<div class="lbl">Elige 3 escenas de tu nueva realidad</div><div class="row">' + chips("escenas", p.scenes.map(s => [s, SCENE_NAMES[s]]), d.escenas || [], 3) + "</div>" : '<p class="muted">Primero completa el día 1 para elegir tu pilar.</p>';
-    if (p && (d.escenas || []).length === 3) h += '<canvas class="collage" id="cv" aria-label="Vista previa de tu collage"></canvas><div class="row"><label class="btn ghost" for="fotoIn" style="cursor:pointer">' + (fotoImg ? "Cambiar mi foto" : "Añadir mi foto (opcional)") + '</label></div><input id="fotoIn" type="file" accept="image/*" hidden><div class="tip">Ritual de 2 minutos: mira tu collage, respira lento y siente gratitud como si ya lo estuvieras viviendo. ' + timerBtn(120) + "</div>";
+    if (!p) h += '<p class="muted">Primero completa el día 1 para elegir tu pilar.</p>';
+    else {
+      h += '<div class="lbl">1. Elige 3 imágenes de tu nueva realidad</div><div class="row">' + chips("escenas", p.scenes.map(s => [s, SCENE_NAMES[s]]), d.escenas || [], 3) + "</div>" +
+        '<div class="lbl">2. Tu frase de propósito</div>' + oneLine("frase", PHRASES[p.id], d, "O escribe la tuya (máx. 160)", 160) + '<p class="small muted">Cambia con tu pilar y tu objetivo. Puedes dejarla o elegir otra.</p>' +
+        '<div class="lbl">3. Tus fotos</div>' + photoControls();
+      if ((d.escenas || []).length === 3) h += '<div class="lbl">Tu collage</div><canvas class="collage" id="cv" aria-label="Vista previa de tu collage"></canvas><div class="row"><button class="btn" type="button" data-act="download">Descargar imagen</button></div><div class="tip">Ritual de 2 minutos: mira tu collage, respira lento y siente gratitud como si ya lo estuvieras viviendo. ' + timerBtn(120) + "</div>";
+    }
   } else if (dy.kind === "socratic") {
     const bl = BLOCKS.find(x => x.old === d.pensamiento);
     h += '<div class="lbl">1. Tu pensamiento limitante</div>' + oneLine("pensamiento", BLOCKS.map(x => x.old), d, "O escribe el tuyo (máx. 100)") +
@@ -786,7 +845,7 @@ function stepValid() {
   const k = DAYS[stepIdx].kind, d = draft;
   if (k === "goal") return !!(d.nombre && d.nombre.trim() && d.pilar && (d.objetivo || (d.objetivoCustom || "").trim()) && (d.rasgos || []).length === 3);
   if (k === "block") return !!(d.bloqueo && d.intensidad && d.fraseNueva && BLOCKS.find(x => x.id === d.bloqueo).nw.includes(d.fraseNueva));
-  if (k === "reality") return (d.escenas || []).length === 3;
+  if (k === "reality") return (d.escenas || []).length === 3 && (d.frase || "").trim().length > 0;
   if (k === "socratic") return !!((d.pensamiento || "").trim() && d.creeAntes && d.evidencia && (d.neutra || "").trim() && !STARTERS.includes((d.neutra || "").trim()) && d.soltar === "si" && d.creeDespues);
   if (k === "decat") return !!(d.miedoAntes && (d.accionMiedo || "").trim() && (d.peor || "").trim() && d.prob && d.veces && (d.planPractico || "").trim() && (d.superado || "").trim() && (d.mejor || "").trim() && (d.valentia || "").trim() && d.ensayo === "si" && (d.miniAccion || "").trim() && d.miedoDespues);
   if (k === "body") return !!(d.compromiso && (d.reemplazo || "").trim() && d.calma === "si");
@@ -822,7 +881,7 @@ function maybeWelcome() { if (!PREVIEW && !wel.open && !sess.open && view === "i
 /* ============ Eventos ============ */
 $("#view").addEventListener("input", (e) => { const k = e.target.dataset.in; if (k) { draft[k] = e.target.value; const b = $('[data-act="savestep"]'); if (b) b.disabled = !stepValid(); } });
 $("#view").addEventListener("change", (e) => {
-  if (e.target.dataset && e.target.dataset.in === "pensamiento") { const ob = BLOCKS.find(b => b.neu.includes(draft.neutra)); if (ob && ob.old !== draft.pensamiento) draft.neutra = ""; renderKeep(window.scrollY); return; } if (e.target.id === "fotoIn" && e.target.files[0]) { const f = e.target.files[0]; e.target.value = ""; setFoto(f); } });
+  if (e.target.dataset && e.target.dataset.in === "pensamiento") { const ob = BLOCKS.find(b => b.neu.includes(draft.neutra)); if (ob && ob.old !== draft.pensamiento) draft.neutra = ""; renderKeep(window.scrollY); return; } if (/^fotoIn\d?$/.test(e.target.id) && e.target.files[0]) { const f = e.target.files[0], n = e.target.id.slice(6); e.target.value = ""; setFoto(f, n ? "foto" + n : "foto"); } });
 $("#view").addEventListener("click", (e) => {
   const a = e.target.closest("[data-act]"); if (!a) return; const act = a.dataset.act, v = a.dataset.v;
   if (act === "pon") { REAL = S; PREVIEW = true; store.set("e23_preview", true); S = makePreview(0); save(); view = "inicio"; render(); }
@@ -852,19 +911,19 @@ $("#view").addEventListener("click", (e) => {
   else if (act === "savestep") {
     if (!stepValid()) return;
     const prev = S.data || {}; S.data = JSON.parse(JSON.stringify(draft));
-    if (DAYS[stepIdx].kind === "goal" && prev.pilar && prev.pilar !== draft.pilar) { S.data.escenas = []; S.data.plan = []; }
+    if (DAYS[stepIdx].kind === "goal" && prev.pilar && prev.pilar !== draft.pilar) { S.data.escenas = []; S.data.plan = []; S.data.frase = ""; }
     const d = S.days[stepIdx] = S.days[stepIdx] || {}; d.step = true;
     if (stepIdx === 8 && dayDone(8)) S.done = true;
     save(); view = "inicio"; render();
   }
   else if (act === "download") { const c = $("#cv"); c.toBlob((b) => { const u = URL.createObjectURL(b), l = document.createElement("a"); l.href = u; l.download = "mi-realidad.png"; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }); }
-  else if (act === "delfoto") delFoto();
+  else if (act === "delfoto") delFoto(v);
   else if (act === "theme") { store.set("e23_theme", v); applyTheme(); render(); }
   else if (act === "ask-reset") { askMode = "reset"; render(); }
   else if (act === "ask-wipe") { askMode = "wipe"; render(); }
   else if (act === "cancel") { askMode = ""; render(); }
   else if (act === "reset") { S = { ...newState(S), restarts: (S.restarts || 0) }; askMode = ""; save(); view = "inicio"; render(); }
-  else if (act === "wipe") { try { localStorage.removeItem("e23_state"); } catch (e2) {} dbDo("readwrite", s => s.delete("foto")).catch(() => {}); S = null; fotoImg = null; askMode = ""; view = "inicio"; render(); }
+  else if (act === "wipe") { try { localStorage.removeItem("e23_state"); } catch (e2) {} FOTO_KEYS.forEach(k => dbDo("readwrite", s => s.delete(k)).catch(() => {})); fotos = {}; S = null; fotoImg = null; askMode = ""; view = "inicio"; render(); }
 });
 function renderKeep(y) { render(); window.scrollTo(0, y); }
 function startTimer(btn, sec) {
