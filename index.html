@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Expansión 23</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0e0c1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Expansión 23">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;1,400&family=Outfit:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Diseño: una columna estrecha pensada para el celular. Barra inferior con 4 secciones; la sesión de audio abre una pantalla completa. */
+:root {
+  --bg: #0e0c1a;
+  --surface: #17142a;
+  --surface-2: #211d3a;
+  --line: #2e2950;
+  --fg: #f1ecf8;
+  --muted: #a29bc0;
+  --ver: #f0bd5c;
+  --sentir: #e58fb0;
+  --actuar: #7fd1b9;
+  --on-accent: #0e0c1a;
+  --accent: var(--ver);
+  --f-display: "Newsreader", Georgia, serif;
+  --f-body: "Outfit", system-ui, sans-serif;
+  --f-mono: "DM Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f6f2fb; --surface: #ffffff; --surface-2: #ece6f6; --line: #d9d0ea;
+    --fg: #221a3a; --muted: #5f5780; --ver: #8a5a00; --sentir: #a23a68; --actuar: #0b6f5a;
+    --on-accent: #ffffff; color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f6f2fb; --surface: #ffffff; --surface-2: #ece6f6; --line: #d9d0ea;
+  --fg: #221a3a; --muted: #5f5780; --ver: #8a5a00; --sentir: #a23a68; --actuar: #0b6f5a;
+  --on-accent: #ffffff; color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font: 400 16px/1.55 var(--f-body);
+  padding-block: 24px 110px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+.app { max-width: 560px; margin: 0 auto; display: grid; gap: 18px; }
+[data-phase="ver"] { --accent: var(--ver); }
+[data-phase="sentir"] { --accent: var(--sentir); }
+[data-phase="actuar"] { --accent: var(--actuar); }
+
+.kicker { font: 500 12px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 400; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(38px, 10vw, 52px); line-height: 1.02; }
+h2 { font-size: 30px; line-height: 1.1; }
+h3 { font-size: 22px; line-height: 1.2; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; gap: 12px; }
+.hero { display: grid; gap: 10px; }
+.hero em { color: var(--accent); }
+.dots { display: flex; gap: 6px; }
+.dots i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+.dots i.ok { background: var(--accent); }
+.dots i.now { background: var(--muted); }
+
+.btn { background: var(--accent); color: var(--on-accent); border: 0; border-radius: 999px; padding: 13px 22px; font-weight: 600; font-size: 16px; justify-self: start; }
+.btn:hover { filter: brightness(1.08); }
+.btn.full { justify-self: stretch; text-align: center; }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); font-weight: 500; }
+.btn.warn { background: var(--sentir); color: var(--on-accent); }
+.btn[disabled] { opacity: .4; cursor: not-allowed; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.chip { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 9px 15px; font-size: 15px; text-align: left; }
+.chip:hover { border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 20%, transparent); border-color: var(--accent); }
+.chip.block { border-radius: 14px; width: 100%; }
+.field { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; width: 100%; min-width: 0; }
+.field:focus-visible { border-color: var(--accent); }
+.lbl { font: 500 12px/1.3 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+.task { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 0; border-top: 1px solid var(--line); }
+.task:first-of-type { border-top: 0; }
+.num { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 500 14px var(--f-mono); border: 1px solid var(--line); color: var(--muted); }
+.task.done .num { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.task h4 { margin: 0; font: 500 16px/1.3 var(--f-body); }
+.task p { font-size: 14px; color: var(--muted); }
+.mini { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 14px; white-space: nowrap; }
+.mini.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
+
+.layers { display: grid; gap: 10px; }
+.layer { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: start; }
+.layer b { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font: 500 11px var(--f-mono); letter-spacing: .06em; color: var(--on-accent); }
+.layer:nth-child(1) b { background: var(--ver); } .layer:nth-child(2) b { background: var(--sentir); } .layer:nth-child(3) b { background: var(--actuar); }
+.layer h4 { margin: 0; font: 600 16px var(--f-body); }
+
+.phase { display: grid; gap: 8px; }
+.phase h3 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.phase h3 span { font: 500 11px var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+details.day { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 0 14px; }
+details.day summary { list-style: none; cursor: pointer; padding: 13px 0; display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+details.day summary::-webkit-details-marker { display: none; }
+details.day .body { padding: 0 0 14px 40px; display: grid; gap: 6px; font-size: 14px; color: var(--muted); }
+.day.locked { opacity: .55; }
+.badge { font: 500 11px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.badge.ok { color: var(--accent); }
+
+.back { background: transparent; border: 0; padding: 4px 0; color: var(--muted); justify-self: start; font-size: 15px; }
+.phrase { font: italic 400 26px/1.25 var(--f-display); color: var(--accent); }
+.old { font: 400 18px/1.3 var(--f-display); color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1px; }
+.tip { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; font-size: 14.5px; display: grid; gap: 6px; }
+canvas.collage { width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); display: block; }
+.plan-item { border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: grid; gap: 8px; }
+.plan-item .top { display: flex; gap: 10px; justify-content: space-between; align-items: start; }
+.x { background: transparent; border: 0; color: var(--muted); font-size: 20px; line-height: 1; padding: 0 4px; }
+.note { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; font-size: 14.5px; }
+
+nav.bar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5; }
+nav.bar div { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
+nav.bar button { background: transparent; border: 0; padding: 10px 4px 9px; display: grid; gap: 3px; justify-items: center; font-size: 12px; color: var(--muted); }
+nav.bar button svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+nav.bar button[aria-current="page"] { color: var(--fg); }
+nav.bar button[aria-current="page"] svg { stroke: var(--ver); }
+
+#sess { position: fixed; inset: 0; z-index: 10; background: var(--bg); display: none; overflow-y: auto;
+  padding-block: calc(24px + env(safe-area-inset-top, 0px)) calc(24px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+#sess.open { display: block; }
+.sess { max-width: 480px; margin: 0 auto; display: grid; gap: 16px; text-align: center; }
+.orb-wrap { display: grid; place-items: center; height: 300px; position: relative; }
+.ring { position: absolute; width: 270px; height: 270px; border-radius: 50%; border: 1px dashed var(--line); }
+.orb { width: 220px; height: 220px; border-radius: 50%; transform: scale(.7); will-change: transform;
+  background: radial-gradient(circle at 38% 32%, color-mix(in srgb, var(--accent) 60%, #fff) 0%, var(--accent) 40%, color-mix(in srgb, var(--accent) 30%, var(--bg)) 100%);
+  box-shadow: 0 0 80px color-mix(in srgb, var(--accent) 40%, transparent); }
+.orb-label { position: absolute; font: 500 14px var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--on-accent); }
+.clock { font: 500 20px var(--f-mono); font-variant-numeric: tabular-nums; color: var(--muted); }
+.sess .row { justify-content: center; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<main class="app" id="view" aria-live="polite"></main>
+
+<nav class="bar" aria-label="Secciones"><div id="nav"></div></nav>
+
+<section id="sess" aria-label="Sesión de audio">
+  <div class="sess" data-phase="ver" id="sessBox">
+    <div><div class="kicker" id="sPhase"></div><h2 id="sTitle"></h2><p class="muted small" id="sDesc"></p></div>
+    <div class="orb-wrap"><div class="ring"></div><div class="orb" id="orb"></div><div class="orb-label" id="orbLabel">Listo</div></div>
+    <div class="clock" id="clock">15:00</div>
+    <div class="row" id="sDur" role="group" aria-label="Duración"></div>
+    <button class="btn full" id="sGo" type="button">Comenzar</button>
+    <div class="row"><label class="lbl" for="vol" style="min-width:76px">Volumen</label><input id="vol" type="range" min="0" max="100" value="80" style="flex:1"></div>
+    <p class="muted small" id="sTip">Con audífonos se percibe mejor el pulso. Busca un lugar tranquilo y mantén la pantalla encendida.</p>
+    <button class="back" id="sClose" type="button" style="justify-self:center">Cerrar</button>
+  </div>
+</section>
+
+<script>
+/* ============ Utilidades ============ */
+const $ = (s) => document.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const dayKey = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const parseKey = (k) => { const a = k.split("-").map(Number); return new Date(a[0], a[1] - 1, a[2]); };
+const daysBetween = (a, b) => Math.round((parseKey(b) - parseKey(a)) / 864e5);
+const fmt = (s) => { s = Math.max(0, Math.round(s)); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
+
+/* ============ Contenido ============ */
+const PHASES = [
+  { id: "ver", name: "Ver", tag: "Fase 3", days: [0, 1, 2], line: "Tu nueva realidad se vuelve visible.", track: { id: "apertura", name: "Apertura", band: "Alfa 10 Hz", carrier: 200, beat: 10, drones: [132, 198, 264], noise: { type: "pink", cutoff: 900, gain: 0.05, lfo: 0.07 }, breath: [5, 5] } },
+  { id: "sentir", name: "Sentir", tag: "Fase 6", days: [3, 4, 5], line: "Tu cuerpo aprende a sostenerla.", track: { id: "merecimiento", name: "Merecimiento", band: "Theta-alfa 7,5 Hz", carrier: 180, beat: 7.5, drones: [144, 216, 288], noise: { type: "brown", cutoff: 500, gain: 0.07, lfo: 0.06 }, breath: [5, 7] } },
+  { id: "actuar", name: "Actuar", tag: "Fase 9", days: [6, 7, 8], line: "Tu plan se vuelve coherente con tu meta.", track: { id: "enfoque", name: "Enfoque dorado", band: "Beta baja 14 Hz", carrier: 220, beat: 14, drones: [110, 165], noise: { type: "pink", cutoff: 1400, gain: 0.04, lfo: 0.05 }, breath: [4, 6] } }
+];
+const DAYS = [
+  { t: "Tu punto de partida", intro: "Define hacia dónde vas y en quién necesitas convertirte.", kind: "goal", ch: "Cuéntale a una persona de confianza cuál es tu objetivo." },
+  { t: "El viejo software", intro: "Identifica la resistencia que más te repites y elige la frase que la reemplaza.", kind: "block", ch: "Haz hoy algo que llevas días posponiendo y te da pereza." },
+  { t: "Tu mapa de realidad", intro: "Arma una imagen de la vida que vas a crear y mírala con gratitud.", kind: "reality", ch: "Pide algo que normalmente no pedirías: un favor, un descuento o una opinión." },
+  { t: "Ancla de la mañana", intro: "Los primeros minutos del día fijan el tono de todo lo demás.", kind: "anchor", ch: "Di “no” con calma a algo que no quieres hacer." },
+  { t: "Cómo te sientes", intro: "Mide tu estado antes y después de la sesión para ver el cambio.", kind: "scale", ch: "Habla con alguien nuevo sobre lo que quieres crear." },
+  { t: "Cuerpo en calma", intro: "Relaja el cuerpo para poder sostener lo que estás creando.", kind: "body", ch: "Muestra algo tuyo sin esperar a que esté perfecto." },
+  { t: "Filtro de coherencia", intro: "Revisa si energía, mente y acción tienen el mismo tamaño.", kind: "coherence", ch: "Haz la llamada o manda el mensaje que has estado evitando." },
+  { t: "Tu plan de acción", intro: "Elige tres acciones concretas y ponles fecha.", kind: "plan", ch: "Haz hoy la primera acción de tu plan." },
+  { t: "El primer paso real", intro: "Cierra el ciclo con acción y decide tu próximo paso.", kind: "close", ch: "Da el siguiente paso de tu plan y decide el que sigue." }
+];
+const PILARES = [
+  { id: "dinero", name: "Dinero y abundancia", scenes: ["ciudad", "amanecer", "camino", "hogar"],
+    goals: ["Generar ingresos estables que me den tranquilidad", "Crear un negocio que funcione sin depender de mi tiempo", "Salir de mis deudas", "Duplicar mis ingresos", "Tener ahorros e inversiones", "Vivir de lo que amo hacer"],
+    acts: ["Definir mi oferta o fuente de ingreso en una frase", "Hablar con 3 personas sobre lo que ofrezco", "Publicar mi oferta en un lugar visible", "Pedir el presupuesto que he postergado", "Revisar mis gastos del mes", "Contactar a un posible cliente o empleador", "Aprender una habilidad clave 30 minutos", "Fijar mi meta de ingresos del mes"] },
+  { id: "pareja", name: "Pareja y relaciones", scenes: ["mar", "hogar", "estrellas", "bosque"],
+    goals: ["Atraer una relación sana y estable", "Fortalecer mi relación actual", "Comunicarme con mi pareja con paz", "Rodearme de vínculos que me nutran", "Construir una familia", "Amarme y tratarme con respeto"],
+    acts: ["Decir con claridad lo que necesito", "Pedir perdón o perdonar a alguien", "Invitar a alguien a una conversación importante", "Dedicar una tarde a mi pareja o a mí", "Escribir una carta que no voy a enviar", "Poner un límite sano", "Salir a conocer gente nueva", "Agradecer a alguien cercano"] },
+  { id: "cuerpo", name: "Cuerpo y salud", scenes: ["amanecer", "montana", "bosque", "mar"],
+    goals: ["Tener energía todos los días", "Llegar a mi peso y forma ideal", "Dormir profundo y descansar", "Moverme a diario con alegría", "Calmar mi ansiedad y mi estrés", "Cuidar mi salud con constancia"],
+    acts: ["Caminar 30 minutos", "Preparar una comida saludable", "Agendar mi chequeo médico", "Acostarme a una hora fija", "Hacer estiramientos o yoga 15 minutos", "Medir cuánta agua tomo hoy", "Dejar una costumbre que me daña", "Inscribirme a una clase de movimiento"] },
+  { id: "libertad", name: "Libertad y viajes", scenes: ["mar", "montana", "camino", "ciudad"],
+    goals: ["Trabajar desde cualquier lugar", "Viajar varias veces al año", "Tener el control de mi propio tiempo", "Vivir en la casa de mis sueños", "Mudarme a otro país", "Tener tiempo libre sin culpa"],
+    acts: ["Buscar vuelos o destinos posibles", "Ordenar mis finanzas para viajar", "Hablar sobre flexibilidad de horario o de trabajo", "Dar un paso concreto hacia mudarme", "Definir qué trabajo puedo hacer en remoto", "Ahorrar una cantidad esta semana", "Despejar un espacio de mi casa", "Planear un día libre"] },
+  { id: "proposito", name: "Propósito y creación", scenes: ["estrellas", "camino", "amanecer", "ciudad"],
+    goals: ["Lanzar mi proyecto al mundo", "Vivir de mi talento", "Ser una referencia en lo que hago", "Ayudar a muchas personas con lo que sé", "Escribir, enseñar o crear a diario", "Descubrir qué quiero hacer"],
+    acts: ["Escribir mi propósito en una frase", "Crear el primer borrador de mi proyecto", "Mostrar mi idea a una persona de confianza", "Publicar algo que he guardado", "Apartar 1 hora diaria para crear", "Estudiar a alguien que ya lo hace", "Inscribirme a un curso o comunidad", "Fijar una fecha de lanzamiento"] }
+];
+const TRAITS = ["Constancia", "Valentía", "Confianza", "Disciplina", "Calma", "Visibilidad", "Generosidad", "Claridad", "Gratitud", "Determinación"];
+const BLOCKS = [
+  { id: "impostor", n: "Siento que no soy suficiente", old: "No soy suficiente para esto", nw: ["Tengo lo necesario para crear esto y lo voy aprendiendo", "Mi valor no depende de mis resultados y mi voz importa"] },
+  { id: "tiempo", n: "No tengo tiempo", old: "No tengo tiempo", nw: ["Mi tiempo alcanza para lo que es prioridad", "Cada día doy un paso y los pasos suman"] },
+  { id: "dinero", n: "No tengo dinero para empezar", old: "No tengo dinero para empezar", nw: ["Empiezo con lo que tengo y el recurso aparece al moverme", "Soy capaz de generar valor y de recibir por él"] },
+  { id: "tarde", n: "Ya es tarde para mí", old: "Ya es tarde para mí", nw: ["Mi momento es ahora y siempre lo fue", "Lo que hoy empiezo, mañana es mi historia"] },
+  { id: "merezco", n: "No lo merezco", old: "No lo merezco", nw: ["Merezco recibir lo que creo con amor y esfuerzo", "Merezco abundancia, así como soy"] },
+  { id: "dirán", n: "Me preocupa qué dirán", old: "¿Qué van a decir de mí?", nw: ["Mi vida es mía y elijo desde lo que siento", "Quien me quiere me apoya y el resto no es mi tarea"] },
+  { id: "exito", n: "Me da miedo que me vaya bien", old: "Si me va bien, algo malo va a pasar", nw: ["Estar bien es seguro para mí y para quienes amo", "Puedo brillar y seguir siendo yo"] },
+  { id: "empezar", n: "No sé por dónde empezar", old: "No sé por dónde empezar", nw: ["Doy el siguiente paso pequeño y el camino se aclara", "No necesito verlo todo, necesito empezar"] }
+];
+const BODYSCAN = ["Frente y ojos", "Mandíbula y lengua", "Cuello y hombros", "Pecho y respiración", "Abdomen", "Manos y brazos", "Piernas y pies"];
+const COMMIT = ["Postergar mi paso del día", "Compararme con otros", "Hablar mal de mí", "Revisar redes al despertar", "Decir “no puedo”", "Quedarme en la queja", "Gastar sin conciencia", "Aislarme"];
+const CUANDO = [["hoy", "Hoy"], ["manana", "Mañana"], ["tres", "En 3 días"], ["semana", "Esta semana"]];
+const CUANDO_N = Object.fromEntries(CUANDO);
+
+/* ============ Estado ============ */
+let S = store.get("e23_state", null);
+let view = "inicio";
+let stepIdx = null;
+let draft = {};
+let askMode = "";
+let fotoImg = null;
+
+const save = () => store.set("e23_state", S);
+const newState = (keep) => ({ start: dayKey(), days: {}, data: keep ? keep.data : {}, restarts: keep ? keep.restarts : 0, cycles: keep ? keep.cycles : 0, note: "", done: false });
+const dayDone = (i) => { const d = S.days[i]; return !!(d && d.audio && d.step); };
+const todayIdx = () => Math.min(daysBetween(S.start, dayKey()), 8);
+const phaseOf = (i) => PHASES[Math.floor(i / 3)];
+const pilar = () => PILARES.find(p => p.id === (S.data || {}).pilar);
+
+function check() {
+  if (!S || S.done) return;
+  const idx = daysBetween(S.start, dayKey());
+  for (let i = 0; i < Math.min(idx, 9); i++) {
+    if (!dayDone(i)) {
+      const ex = S.days[i] || {};
+      const miss = (ex.audio ? "" : "la sesión de audio") + (!ex.audio && !ex.step ? " y " : "") + (ex.step ? "" : "el paso del día");
+      const when = parseKey(S.start); when.setDate(when.getDate() + i);
+      S = { ...newState(S), restarts: (S.restarts || 0) + 1,
+        note: "El programa volvió al día 1: el " + when.toLocaleDateString("es", { day: "numeric", month: "long" }) + " faltó " + miss + "." };
+      save(); return;
+    }
+  }
+  if (idx >= 9 && [0, 1, 2, 3, 4, 5, 6, 7, 8].every(dayDone)) { S.done = true; save(); }
+}
+
+/* ============ Audio ============ */
+let ctx = null, master = null, nodes = [], playing = false, startedAt = 0, endAt = 0, wake = null;
+const GAIN = 1.8;
+let volume = store.get("e23_vol", 0.8);
+let sess = { open: false, minutes: 15, started: false, finished: false, track: null, idx: 0 };
+
+function noiseBuffer(c, type) {
+  const len = c.sampleRate * 6, buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+  if (type === "brown") {
+    let last = 0;
+    for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; }
+  } else {
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.969 * b2 + w * 0.153852;
+      b3 = 0.8665 * b3 + w * 0.3104856; b4 = 0.55 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.016898;
+      d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11; b6 = w * 0.115926;
+    }
+  }
+  return buf;
+}
+function buildGraph(t) {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  ctx = new AC();
+  master = ctx.createGain(); master.gain.value = 0;
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -10; comp.knee.value = 12; comp.ratio.value = 12; comp.attack.value = 0.003; comp.release.value = 0.25;
+  master.connect(comp); comp.connect(ctx.destination);
+  nodes = [];
+  const now = ctx.currentTime;
+  [-1, 1].forEach((side) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(), p = ctx.createStereoPanner();
+    o.type = "sine"; o.frequency.setValueAtTime(t.carrier + side * t.beat / 2, now);
+    g.gain.value = 0.14; p.pan.value = side;
+    o.connect(g).connect(p).connect(master); o.start(); nodes.push(o);
+  });
+  t.drones.forEach((f, i) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(), l = ctx.createOscillator(), lg = ctx.createGain();
+    o.type = "sine"; o.frequency.value = f; o.detune.value = (i - 1) * 3;
+    const base = 0.09 / Math.sqrt(t.drones.length);
+    g.gain.value = base; l.frequency.value = 0.04 + i * 0.023; lg.gain.value = base * 0.55;
+    l.connect(lg).connect(g.gain); o.connect(g).connect(master); o.start(); l.start(); nodes.push(o, l);
+  });
+  const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(), l = ctx.createOscillator(), lg = ctx.createGain();
+  s.buffer = noiseBuffer(ctx, t.noise.type); s.loop = true;
+  f.type = "lowpass"; f.frequency.value = t.noise.cutoff; g.gain.value = t.noise.gain;
+  l.frequency.value = t.noise.lfo; lg.gain.value = t.noise.gain * 0.35;
+  l.connect(lg).connect(g.gain); s.connect(f).connect(g).connect(master); s.start(); l.start(); nodes.push(s, l);
+}
+async function lockScreen() { try { if (navigator.wakeLock) wake = await navigator.wakeLock.request("screen"); } catch (e) {} }
+function unlockScreen() { try { if (wake) wake.release(); } catch (e) {} wake = null; }
+function startAudio() {
+  buildGraph(sess.track); ctx.resume();
+  master.gain.setTargetAtTime(volume * GAIN, ctx.currentTime, 1.2);
+  playing = true; startedAt = performance.now(); endAt = startedAt + sess.minutes * 60000;
+  lockScreen(); tick();
+}
+function stopAudio() {
+  unlockScreen();
+  if (!ctx) { playing = false; return; }
+  const c = ctx, m = master, n = nodes;
+  m.gain.cancelScheduledValues(c.currentTime); m.gain.setTargetAtTime(0, c.currentTime, 0.6);
+  setTimeout(() => { n.forEach(x => { try { x.stop(); } catch (e) {} }); c.close().catch(() => {}); }, 3000);
+  ctx = null; master = null; nodes = []; playing = false;
+}
+function tick() {
+  if (!playing) return;
+  const now = performance.now(), el = (now - startedAt) / 1000, [inh, exh] = sess.track.breath, ph = el % (inh + exh);
+  const ease = (x) => 0.5 - 0.5 * Math.cos(Math.PI * x);
+  let k; if (ph < inh) { k = ease(ph / inh); $("#orbLabel").textContent = "Inhala"; } else { k = 1 - ease((ph - inh) / exh); $("#orbLabel").textContent = "Exhala"; }
+  $("#orb").style.transform = "scale(" + (0.7 + 0.3 * k).toFixed(3) + ")";
+  $("#clock").textContent = fmt((endAt - now) / 1000) + " restantes";
+  if (now >= endAt) { stopAudio(); sess.finished = true; sess.started = false; renderSession(); return; }
+  requestAnimationFrame(tick);
+}
+
+/* ============ Sesión de audio (pantalla completa) ============ */
+function openSession() {
+  const i = todayIdx(), ph = phaseOf(i);
+  sess = { open: true, minutes: sess.minutes || 15, started: false, finished: false, track: ph.track, idx: i, phase: ph };
+  $("#sess").classList.add("open"); renderSession();
+}
+function renderSession() {
+  const ph = sess.phase;
+  $("#sessBox").dataset.phase = ph.id;
+  $("#sPhase").textContent = ph.tag + " · " + ph.name + " · Día " + (sess.idx + 1);
+  $("#sTitle").textContent = sess.track.name;
+  $("#sDesc").textContent = sess.track.band + " · respiración " + sess.track.breath[0] + "-" + sess.track.breath[1];
+  const dur = $("#sDur");
+  dur.innerHTML = sess.started ? "" : [6, 10, 15, 20].map(m => '<button class="chip" type="button" data-min="' + m + '" aria-pressed="' + (sess.minutes === m) + '">' + m + " min</button>").join("");
+  $("#sGo").textContent = sess.finished ? "Sesión completa · Cerrar" : sess.started ? "Terminar" : "Comenzar";
+  if (!sess.started) { $("#clock").textContent = sess.finished ? "00:00" : fmt(sess.minutes * 60); $("#orb").style.transform = "scale(.7)"; $("#orbLabel").textContent = sess.finished ? "Gracias" : "Listo"; }
+}
+function closeSession() { if (playing) stopAudio(); sess.open = false; sess.started = false; $("#sess").classList.remove("open"); render(); }
+$("#sDur").addEventListener("click", (e) => { const b = e.target.closest("[data-min]"); if (b) { sess.minutes = +b.dataset.min; renderSession(); } });
+$("#sGo").addEventListener("click", () => {
+  if (sess.finished) { closeSession(); return; }
+  if (sess.started) { closeSession(); return; }
+  sess.started = true; renderSession();
+  const d = S.days[sess.idx] = S.days[sess.idx] || {}; d.audio = true; save();
+  startAudio();
+});
+$("#sClose").addEventListener("click", closeSession);
+$("#vol").value = Math.round(volume * 100);
+$("#vol").addEventListener("input", (e) => { volume = e.target.value / 100; store.set("e23_vol", volume); if (ctx && master) master.gain.setTargetAtTime(volume * GAIN, ctx.currentTime, 0.1); });
+
+/* ============ Escenas y collage (canvas) ============ */
+const SCENE_NAMES = { amanecer: "Amanecer", montana: "Montaña", mar: "Mar", hogar: "Hogar", ciudad: "Ciudad", estrellas: "Estrellas", bosque: "Bosque", camino: "Camino" };
+function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function sky(g, x, y, w, h, stops) { const gr = g.createLinearGradient(0, y, 0, y + h); stops.forEach((c, i) => gr.addColorStop(i / (stops.length - 1), c)); g.fillStyle = gr; g.fillRect(x, y, w, h); }
+function glow(g, cx, cy, r, rgb, a) { const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r); gr.addColorStop(0, "rgba(" + rgb + "," + a + ")"); gr.addColorStop(1, "rgba(" + rgb + ",0)"); g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill(); }
+function ridge(g, x, y, w, h, baseY, amp, col, rnd) {
+  const ph = [rnd() * 6, rnd() * 6, rnd() * 6], n = 48; g.fillStyle = col; g.beginPath(); g.moveTo(x, y + h);
+  for (let i = 0; i <= n; i++) { const t = i / n; g.lineTo(x + t * w, y + baseY - amp * (0.5 * Math.sin(t * 3 + ph[0]) + 0.3 * Math.sin(t * 7 + ph[1]) + 0.2 * Math.sin(t * 13 + ph[2]))); }
+  g.lineTo(x + w, y + h); g.closePath(); g.fill();
+}
+function peaks(g, x, y, w, h, baseY, hMax, col, rnd) {
+  g.fillStyle = col; g.beginPath(); g.moveTo(x, y + h); g.lineTo(x, y + baseY);
+  let px = 0; while (px < w) { const step = w * (0.12 + rnd() * 0.12), top = baseY - hMax * (0.45 + rnd() * 0.55); g.lineTo(x + px + step / 2, y + top); g.lineTo(x + Math.min(w, px + step), y + baseY - hMax * 0.1 * rnd()); px += step; }
+  g.lineTo(x + w, y + h); g.closePath(); g.fill();
+}
+function stars(g, x, y, w, h, n, rnd, maxY) { for (let i = 0; i < n; i++) { g.fillStyle = "rgba(255,255,255," + (0.3 + rnd() * 0.7).toFixed(2) + ")"; g.beginPath(); g.arc(x + rnd() * w, y + rnd() * h * maxY, 0.6 + rnd() * 1.8 * (w / 500), 0, 7); g.fill(); } }
+function drawScene(g, type, x, y, w, h, seed) {
+  const rnd = mulberry(seed || 7); g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+  if (type === "amanecer") {
+    sky(g, x, y, w, h, ["#2b1d54", "#8a4a86", "#f08a5d", "#ffd68a"]); glow(g, x + w * .5, y + h * .64, w * .5, "255,214,140", .8);
+    g.fillStyle = "#fff1c4"; g.beginPath(); g.arc(x + w * .5, y + h * .64, w * .1, 0, 7); g.fill();
+    ridge(g, x, y, w, h, h * .72, h * .08, "#5b2f6e", rnd); ridge(g, x, y, w, h, h * .82, h * .07, "#3a2058", rnd); ridge(g, x, y, w, h, h * .93, h * .05, "#1f1238", rnd);
+  } else if (type === "montana") {
+    sky(g, x, y, w, h, ["#1c2a54", "#5b7bb5", "#f4c9a0"]); glow(g, x + w * .7, y + h * .3, w * .35, "255,236,200", .6);
+    peaks(g, x, y, w, h, h * .75, h * .42, "#6a7fb0", rnd); peaks(g, x, y, w, h, h * .85, h * .36, "#3d4d82", rnd); peaks(g, x, y, w, h, h * 1.0, h * .3, "#1d2447", rnd);
+  } else if (type === "mar") {
+    sky(g, x, y, w, h * .56, ["#1b2f5e", "#e0856a", "#ffd79a"]); glow(g, x + w * .5, y + h * .56, w * .45, "255,220,160", .85);
+    g.fillStyle = "#fff0c8"; g.beginPath(); g.arc(x + w * .5, y + h * .56, w * .09, Math.PI, 0); g.fill();
+    sky(g, x, y + h * .56, w, h * .44, ["#d9856a", "#3a4f86", "#14214a"]);
+    for (let i = 0; i < 9; i++) { g.fillStyle = "rgba(255,226,170," + (0.5 - i * 0.045) + ")"; const ww = w * (0.18 - i * 0.012), yy = y + h * (0.58 + i * 0.04); g.fillRect(x + w * .5 - ww / 2, yy, ww, h * .008); }
+    for (let k = 0; k < 4; k++) { g.strokeStyle = "rgba(255,255,255,.12)"; g.lineWidth = 1.5; g.beginPath(); for (let i = 0; i <= 40; i++) { const t = i / 40; g.lineTo(x + t * w, y + h * (0.7 + k * 0.07) + Math.sin(t * 12 + k * 2) * h * .008); } g.stroke(); }
+  } else if (type === "hogar") {
+    sky(g, x, y, w, h, ["#1f2547", "#6b4f8f", "#f0a06a"]); glow(g, x + w * .7, y + h * .6, w * .4, "255,200,140", .6);
+    ridge(g, x, y, w, h, h * .78, h * .05, "#2c2150", rnd); ridge(g, x, y, w, h, h * .9, h * .04, "#161033", rnd);
+    const hx = x + w * .3, hw = w * .4, hy = y + h * .62, hh = h * .22;
+    g.fillStyle = "#120d2b"; g.fillRect(hx, hy, hw, hh); g.beginPath(); g.moveTo(hx - hw * .06, hy); g.lineTo(hx + hw / 2, hy - hh * .6); g.lineTo(hx + hw * 1.06, hy); g.closePath(); g.fill();
+    g.fillStyle = "#ffd27a"; [[.12, .25], [.62, .25], [.37, .5]].forEach(([a, b]) => g.fillRect(hx + hw * a, hy + hh * b, hw * .22, hh * .28));
+    g.fillStyle = "#0d0922"; for (let i = 0; i < 5; i++) { g.beginPath(); g.arc(x + w * (0.08 + i * 0.2 + rnd() * .05), y + h * .86, w * .035, 0, 7); g.fill(); }
+  } else if (type === "ciudad") {
+    sky(g, x, y, w, h, ["#0b1030", "#2a2766", "#6a4f9a"]); glow(g, x + w * .75, y + h * .22, w * .22, "255,245,220", .7); g.fillStyle = "#fff8e6"; g.beginPath(); g.arc(x + w * .75, y + h * .22, w * .045, 0, 7); g.fill();
+    stars(g, x, y, w, h, 40, rnd, .45);
+    let bx = 0; while (bx < w) { const bw = w * (0.06 + rnd() * 0.07), bh = h * (0.18 + rnd() * 0.4); g.fillStyle = "#0b0a20"; g.fillRect(x + bx, y + h - bh, bw, bh);
+      for (let wy = y + h - bh + 8; wy < y + h - 8; wy += 14) for (let wx = x + bx + 5; wx < x + bx + bw - 6; wx += 12) if (rnd() > .55) { g.fillStyle = "rgba(255,210,120," + (0.5 + rnd() * .5).toFixed(2) + ")"; g.fillRect(wx, wy, 4, 6); }
+      bx += bw + 2; }
+  } else if (type === "estrellas") {
+    sky(g, x, y, w, h, ["#070a24", "#2b1d5c", "#5b3b8c"]);
+    const gr = g.createLinearGradient(x, y + h * .6, x + w, y); gr.addColorStop(0, "rgba(255,255,255,0)"); gr.addColorStop(.5, "rgba(210,190,255,.22)"); gr.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = gr; g.fillRect(x, y, w, h);
+    stars(g, x, y, w, h, 130, rnd, .85); ridge(g, x, y, w, h, h * .88, h * .05, "#0a0820", rnd);
+    g.fillStyle = "#0a0820"; g.beginPath(); g.moveTo(x + w * .7, y + h * .87); g.lineTo(x + w * .73, y + h * .72); g.lineTo(x + w * .76, y + h * .87); g.fill();
+  } else if (type === "bosque") {
+    sky(g, x, y, w, h, ["#163b3a", "#4f8f7a", "#bfe3c8"]);
+    [["#3e7a63", .55], ["#2b6150", .7], ["#1b4a3e", .85], ["#103329", 1]].forEach(([c, by], li) => { g.fillStyle = c; for (let i = 0; i < 9; i++) { const tx = x + w * (i / 8) + (rnd() - .5) * w * .06, tw = w * (0.1 + rnd() * .05), ty = y + h * by, th = h * (0.3 + rnd() * .12);
+      for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(tx - tw * (1 - k * .2) / 2, ty - th * k * .25); g.lineTo(tx, ty - th * (k * .25 + .4)); g.lineTo(tx + tw * (1 - k * .2) / 2, ty - th * k * .25); g.fill(); } }
+      const mg = g.createLinearGradient(0, y + h * (by - .15), 0, y + h * by); mg.addColorStop(0, "rgba(220,255,235,0)"); mg.addColorStop(1, "rgba(220,255,235,.25)"); g.fillStyle = mg; g.fillRect(x, y + h * (by - .15), w, h * .15); });
+  } else if (type === "camino") {
+    sky(g, x, y, w, h, ["#2a2060", "#e07a5f", "#ffd18c"]); glow(g, x + w * .5, y + h * .5, w * .4, "255,220,150", .8);
+    g.fillStyle = "#fff0c0"; g.beginPath(); g.arc(x + w * .5, y + h * .5, w * .06, 0, 7); g.fill();
+    ridge(g, x, y, w, h, h * .52, h * .03, "#3a2058", rnd); g.fillStyle = "#1c1236"; g.fillRect(x, y + h * .52, w, h * .48);
+    g.fillStyle = "#2e2448"; g.beginPath(); g.moveTo(x + w * .48, y + h * .52); g.lineTo(x + w * .52, y + h * .52); g.lineTo(x + w * .95, y + h); g.lineTo(x + w * .05, y + h); g.closePath(); g.fill();
+    g.fillStyle = "rgba(255,225,160,.7)"; for (let i = 0; i < 6; i++) { const t = i / 6, yy = y + h * (0.55 + t * t * .45), ww = w * (0.004 + t * t * .02); g.fillRect(x + w * .5 - ww / 2, yy, ww, h * (0.012 + t * .04)); }
+  }
+  g.restore();
+}
+function wrapText(g, text, x, y, maxW, lh, maxLines) {
+  const words = String(text).split(/\s+/); let line = "", n = 0;
+  for (let i = 0; i < words.length; i++) { const t = line ? line + " " + words[i] : words[i];
+    if (g.measureText(t).width > maxW && line) { g.fillText(line, x, y + n * lh); n++; line = words[i]; if (n >= maxLines) return n; } else line = t; }
+  if (line && n < maxLines) { g.fillText(line, x, y + n * lh); n++; } return n;
+}
+function circleClip(g, cx, cy, r) { g.beginPath(); g.arc(cx, cy, r, 0, 7); g.clip(); }
+function drawCollage(canvas, d) {
+  const W = 1080, H = 1350, sc = d.escenas || []; canvas.width = W; canvas.height = H; const g = canvas.getContext("2d");
+  drawScene(g, sc[0] || "amanecer", 0, 0, W, H, 11);
+  const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "rgba(8,6,20,.6)"); gr.addColorStop(.35, "rgba(8,6,20,.05)"); gr.addColorStop(.6, "rgba(8,6,20,.45)"); gr.addColorStop(1, "rgba(8,6,20,.88)"); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.fillStyle = "#fff"; g.textBaseline = "alphabetic";
+  g.font = '500 28px "DM Mono", monospace'; try { g.letterSpacing = "6px"; } catch (e) {} g.fillText("EXPANSIÓN 23", 60, 96); try { g.letterSpacing = "0px"; } catch (e) {}
+  let fs = 96; g.font = 'italic 400 ' + fs + 'px "Newsreader", Georgia, serif'; while (g.measureText(d.nombre || "").width > 960 && fs > 40) { fs -= 4; g.font = 'italic 400 ' + fs + 'px "Newsreader", Georgia, serif'; }
+  g.fillText(d.nombre || "", 60, 205);
+  g.font = '400 42px "Outfit", system-ui, sans-serif'; wrapText(g, objetivoTxt(d), 60, 270, 960, 54, 3);
+  if (fotoImg) { g.save(); circleClip(g, 540, 640, 170); const s = Math.min(fotoImg.width, fotoImg.height); g.drawImage(fotoImg, (fotoImg.width - s) / 2, (fotoImg.height - s) / 2, s, s, 370, 470, 340, 340); g.restore(); g.strokeStyle = "#f0bd5c"; g.lineWidth = 8; g.beginPath(); g.arc(540, 640, 174, 0, 7); g.stroke(); }
+  [[1, 60], [2, 560]].forEach(([i, x]) => { drawScene(g, sc[i] || "mar", x, 830, 460, 300, 20 + i); g.strokeStyle = "rgba(255,255,255,.5)"; g.lineWidth = 2; g.strokeRect(x, 830, 460, 300); });
+  g.fillStyle = "#f0bd5c"; g.font = '500 30px "DM Mono", monospace'; g.fillText(("SOY · " + (d.rasgos || []).join(" · ")).toUpperCase(), 60, 1186);
+  g.fillStyle = "#fff"; g.font = 'italic 400 44px "Newsreader", Georgia, serif'; wrapText(g, "“" + (d.fraseNueva || "") + "”", 60, 1246, 960, 52, 2);
+}
+const objetivoTxt = (d) => { d = d || S.data || {}; return (d.objetivoCustom || "").trim() || d.objetivo || ""; };
+
+/* ============ Foto (IndexedDB) ============ */
+const dbOpen = () => new Promise((res, rej) => { const r = indexedDB.open("e23", 1); r.onupgradeneeded = () => r.result.createObjectStore("kv"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+const dbDo = (mode, fn) => dbOpen().then(db => new Promise((res, rej) => { const q = fn(db.transaction("kv", mode).objectStore("kv")); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }));
+function blobToImage(blob) { return new Promise((res) => { const u = URL.createObjectURL(blob), im = new Image(); im.onload = () => { res(im); }; im.onerror = () => res(null); im.src = u; }); }
+async function loadFoto() { try { const b = await dbDo("readonly", s => s.get("foto")); fotoImg = b ? await blobToImage(b) : null; } catch (e) { fotoImg = null; } }
+async function setFoto(file) {
+  const im = await blobToImage(file); if (!im) return;
+  const s = Math.min(im.width, im.height), c = document.createElement("canvas"); c.width = c.height = 640;
+  c.getContext("2d").drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, 640, 640);
+  const blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.85));
+  try { await dbDo("readwrite", s2 => s2.put(blob, "foto")); } catch (e) {} fotoImg = await blobToImage(blob); render();
+}
+async function delFoto() { try { await dbDo("readwrite", s => s.delete("foto")); } catch (e) {} fotoImg = null; render(); }
+
+/* ============ Vistas ============ */
+const chips = (k, opts, sel, max) => opts.map(o => { const v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o, on = Array.isArray(sel) ? sel.includes(v) : sel === v;
+  return '<button class="chip' + (opts.length && String(t).length > 22 ? " block" : "") + '" type="button" data-act="pick" data-k="' + k + '" data-v="' + esc(v) + '" data-max="' + (max || 1) + '" aria-pressed="' + on + '">' + esc(t) + "</button>"; }).join("");
+const dots = () => '<div class="dots">' + [0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => '<i class="' + (dayDone(i) ? "ok" : i === todayIdx() && !S.done ? "now" : "") + '"></i>').join("") + "</div>";
+const NAV = [["inicio", "Inicio", '<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>'], ["programa", "Programa", '<rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/>'], ["realidad", "Mi realidad", '<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>'], ["ajustes", "Ajustes", '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>']];
+
+function render() {
+  check();
+  $("#nav").innerHTML = NAV.map(([id, n, p]) => '<button type="button" data-nav="' + id + '"' + (view === id || (view === "dia" && id === "inicio") ? ' aria-current="page"' : "") + '><svg viewBox="0 0 24 24" aria-hidden="true">' + p + "</svg>" + n + "</button>").join("");
+  const v = $("#view");
+  v.innerHTML = view === "dia" ? vDia() : view === "programa" ? vPrograma() : view === "realidad" ? vRealidad() : view === "ajustes" ? vAjustes() : vInicio();
+  const cv = $("#cv"), cd = view === "dia" ? draft : (S && S.data); if (cv && cd && (cd.escenas || []).length === 3) { (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => drawCollage(cv, cd)); }
+  window.scrollTo(0, 0);
+}
+
+function vInicio() {
+  if (!S) return '<header class="hero"><div class="kicker">Programa de 9 días</div><h1>Expansión <em>23</em></h1><p class="muted">Nueve días para alinear tu energía, tu mente y tus acciones con la vida que quieres crear. Unos 15 a 20 minutos diarios.</p></header>' +
+    '<section class="card layers"><div class="layer"><b>ENE</b><div><h4>Energía</h4><p class="muted small">Frecuencias y audios que calman tu cuerpo y afinan tu atención.</p></div></div><div class="layer"><b>MEN</b><div><h4>Mente</h4><p class="muted small">Cambias la frase vieja que te frena por una nueva, eligiendo opciones, sin horas de escritura.</p></div></div><div class="layer"><b>3D</b><div><h4>Acción</h4><p class="muted small">Un plan concreto, del tamaño de tu meta, y un paso real cada día.</p></div></div></section>' +
+    '<section class="card"><h3>Cómo funciona</h3><p class="muted small">Fase 3 (días 1-3): ver tu nueva realidad. Fase 6 (días 4-6): sentirla en el cuerpo. Fase 9 (días 7-9): actuar con un plan coherente. Si un día queda incompleto, el programa vuelve al día 1.</p><p class="muted small">Todo lo que escribes y tu foto se guardan solo en este dispositivo.</p></section>' +
+    '<button class="btn full" type="button" data-act="begin">Empezar mi programa de 9 días</button>';
+  const n = S.note ? '<div class="note">' + esc(S.note) + "</div>" : "";
+  if (S.done) {
+    const d = S.data || {}, b = BLOCKS.find(x => x.id === d.bloqueo) || {};
+    return '<header class="hero" data-phase="actuar"><div class="kicker">Programa completo</div><h1>Lo <em>lograste</em>, ' + esc(d.nombre || "") + '</h1><p class="muted">Terminaste los 9 días. Esto es lo que construiste.</p></header>' + dots() +
+      '<section class="card"><div class="lbl">Mi objetivo</div><p>' + esc(objetivoTxt()) + '</p><div class="lbl">Mi frase nueva</div><p class="phrase">' + esc(d.fraseNueva || "") + '</p><div class="lbl">Mi plan</div>' + (d.plan || []).map(p => '<p class="small">• ' + esc(p.t) + " <span class=\"muted\">(" + CUANDO_N[p.cuando] + ")</span></p>").join("") + '</section>' +
+      '<button class="btn full" type="button" data-act="again">Empezar otro ciclo de 9 días</button>';
+  }
+  const i = todayIdx(), ph = phaseOf(i), dy = DAYS[i], day = S.days[i] || {}, ok = dayDone(i);
+  return n + '<header class="hero" data-phase="' + ph.id + '"><div class="kicker">' + ph.tag + " · " + ph.name + '</div><h1>Día ' + (i + 1) + ' <em>de 9</em></h1><p class="muted">' + esc(dy.t) + ". " + esc(dy.intro) + "</p></header>" + dots() +
+    '<section class="card" data-phase="' + ph.id + '">' +
+    '<div class="task' + (day.audio ? " done" : "") + '"><span class="num">' + (day.audio ? "✓" : "1") + '</span><div><h4>Sesión de audio</h4><p>' + ph.track.name + " · " + ph.track.band + '</p></div><button class="mini' + (day.audio ? "" : " on") + '" type="button" data-act="session">' + (day.audio ? "Repetir" : "Empezar") + "</button></div>" +
+    '<div class="task' + (day.step ? " done" : "") + '"><span class="num">' + (day.step ? "✓" : "2") + '</span><div><h4>Paso del día</h4><p>' + esc(dy.t) + '</p></div><button class="mini' + (day.step ? "" : " on") + '" type="button" data-act="step">' + (day.step ? "Ver" : "Abrir") + "</button></div>" +
+    '<div class="task' + (day.challenge ? " done" : "") + '"><span class="num">' + (day.challenge ? "✓" : "3") + '</span><div><h4>Acción real</h4><p>' + esc(dy.ch) + '</p></div><button class="mini' + (day.challenge ? " on" : "") + '" type="button" data-act="challenge">' + (day.challenge ? "Hecha" : "Lo hice") + "</button></div></section>" +
+    (ok ? '<div class="note">Día ' + (i + 1) + " completo. Vuelve mañana para el día " + (i + 2 > 9 ? "final" : i + 2) + ". Si pasa un día sin completarlo, el programa vuelve al día 1.</div>" : '<div class="note">Para completar el día necesitas la sesión de audio y el paso del día. La acción real cuenta aparte.</div>');
+}
+
+function vPrograma() {
+  if (!S) return '<header class="hero"><h1>Programa</h1><p class="muted">Empieza el programa desde Inicio para ver tus 9 días.</p></header>';
+  const ti = todayIdx();
+  return '<header class="hero"><div class="kicker">Tus 9 días</div><h1>Programa</h1></header>' + dots() + PHASES.map(ph => '<section class="phase" data-phase="' + ph.id + '"><h3>' + ph.name + "<span>" + ph.tag + '</span></h3><p class="muted small">' + ph.line + "</p>" +
+    ph.days.map(i => { const locked = i > ti && !S.done, st = dayDone(i) ? '<span class="badge ok">Hecho</span>' : i === ti ? '<span class="badge ok">Hoy</span>' : '<span class="badge">Bloqueado</span>';
+      return '<details class="day' + (locked ? " locked" : "") + '"' + (locked ? ' onclick="return false"' : "") + "><summary><span class=\"num\" style=\"width:30px;height:30px\">" + (i + 1) + "</span><span>" + esc(DAYS[i].t) + "</span>" + st + '</summary><div class="body"><p>' + esc(DAYS[i].intro) + "</p>" + summaryDay(i) + "</div></details>"; }).join("") + "</section>").join("");
+}
+function summaryDay(i) {
+  const d = S.data || {}, out = [], p = pilar(), b = BLOCKS.find(x => x.id === d.bloqueo);
+  if (!S.days[i] || !S.days[i].step) return "";
+  if (i === 0) out.push("Nombre: " + d.nombre, "Pilar: " + (p ? p.name : ""), "Objetivo: " + objetivoTxt(), "Cualidades: " + (d.rasgos || []).join(", "));
+  if (i === 1 && b) out.push("Lo que me repetía: " + b.old, "Lo nuevo: " + d.fraseNueva, "Intensidad: " + d.intensidad + " de 5");
+  if (i === 2) out.push("Escenas: " + (d.escenas || []).map(s => SCENE_NAMES[s]).join(", "));
+  if (i === 3) out.push("Ancla de la mañana hecha.");
+  if (i === 4) out.push("Antes: " + d.antes + " de 5 · Después: " + d.despues + " de 5");
+  if (i === 5) out.push("Compromiso: dejo de " + String(d.compromiso || "").toLowerCase());
+  if (i === 6 && d.coherencia) out.push(...coherenceTip(d.coherencia));
+  if (i === 7) (d.plan || []).forEach(x => out.push("• " + x.t + " (" + CUANDO_N[x.cuando] + ")"));
+  if (i === 8 && d.proximo) out.push("Próximo paso: " + d.proximo);
+  return out.map(x => "<p>" + esc(x) + "</p>").join("");
+}
+
+function vRealidad() {
+  const d = (S && S.data) || {}, ready = S && (d.escenas || []).length === 3 && d.nombre;
+  if (!ready) return '<header class="hero"><div class="kicker">Mi realidad</div><h1>Tu collage</h1><p class="muted">Se arma el día 3 del programa, con tu objetivo, tus cualidades y tu frase nueva.</p></header>';
+  return '<header class="hero"><div class="kicker">Mi realidad</div><h1>Tu collage</h1><p class="muted small">Es un collage armado con tus respuestas, no una imagen de IA. Míralo unos minutos cada día con gratitud.</p></header>' +
+    '<canvas class="collage" id="cv" aria-label="Collage de tu nueva realidad"></canvas>' +
+    '<div class="row"><button class="btn" type="button" data-act="download">Descargar imagen</button><label class="btn ghost" for="fotoIn" style="cursor:pointer">' + (fotoImg ? "Cambiar mi foto" : "Añadir mi foto") + '</label>' + (fotoImg ? '<button class="btn ghost" type="button" data-act="delfoto">Quitar foto</button>' : "") + '</div><input id="fotoIn" type="file" accept="image/*" hidden>' +
+    '<p class="muted small">Tu foto se guarda solo en este dispositivo.</p>';
+}
+
+function vAjustes() {
+  const th = store.get("e23_theme", "auto");
+  return '<header class="hero"><div class="kicker">Ajustes</div><h1>Ajustes</h1></header>' +
+    '<section class="card"><h3>Tema</h3><div class="row">' + [["auto", "Automático"], ["light", "Claro"], ["dark", "Oscuro"]].map(([k, n]) => '<button class="chip" type="button" data-act="theme" data-v="' + k + '" aria-pressed="' + (th === k) + '">' + n + "</button>").join("") + "</div></section>" +
+    '<section class="card"><h3>Programa</h3><p class="muted small">' + (S ? "Día " + (S.done ? 9 : todayIdx() + 1) + " de 9. Reinicios: " + (S.restarts || 0) + "." : "Aún no has empezado.") + '</p>' +
+    (S ? (askMode === "reset" ? '<div class="row"><button class="btn warn" type="button" data-act="reset">Sí, reiniciar</button><button class="btn ghost" type="button" data-act="cancel">Cancelar</button></div>' : '<button class="btn ghost" type="button" data-act="ask-reset">Reiniciar programa</button>') : "") + "</section>" +
+    '<section class="card"><h3>Mis datos</h3><p class="muted small">Tus respuestas y tu foto viven solo en este dispositivo. Borrarlos no se puede deshacer.</p>' +
+    (askMode === "wipe" ? '<div class="row"><button class="btn warn" type="button" data-act="wipe">Sí, borrar todo</button><button class="btn ghost" type="button" data-act="cancel">Cancelar</button></div>' : '<button class="btn ghost" type="button" data-act="ask-wipe">Borrar mis datos y mi foto</button>') + "</section>" +
+    '<p class="muted small">Es una herramienta de relajación y desarrollo personal, no un tratamiento médico. Si algo te incomoda con los audios, baja el volumen o detén la sesión.</p>';
+}
+
+/* ----- Paso del día ----- */
+const coherenceTip = (c) => { const t = [];
+  if (c.energia === "casi") t.push("Tu energía necesita constancia: protege tus sesiones diarias."); else if (c.energia === "algunos") t.push("Sube tu constancia: la sesión de audio diaria es parte del plan.");
+  if (c.mente <= 2) t.push("Tu mente aún duda: repite tu frase nueva cada mañana."); if (c.accion === "pequeno") t.push("Tu plan es más pequeño que tu meta: añade una acción que te saque de tu zona cómoda."); if (c.accion === "sin") t.push("Te falta un plan: mañana armas el tuyo.");
+  if (!t.length) t.push("Tus tres capas están alineadas. Sostén el ritmo."); return t; };
+
+function openStep(i) { stepIdx = i; draft = JSON.parse(JSON.stringify(S.data || {})); if (i === 2 && !(draft.escenas || []).length && pilar()) draft.escenas = pilar().scenes.slice(0, 3); view = "dia"; render(); }
+function vDia() {
+  const i = stepIdx, dy = DAYS[i], ph = phaseOf(i), d = draft, p = PILARES.find(x => x.id === d.pilar), b = BLOCKS.find(x => x.id === d.bloqueo), ro = i < todayIdx() || (S.days[i] && S.days[i].step && i !== todayIdx());
+  let h = '<button class="back" type="button" data-act="back">← Volver</button><header class="hero" data-phase="' + ph.id + '"><div class="kicker">Día ' + (i + 1) + " · " + ph.name + "</div><h2>" + esc(dy.t) + '</h2><p class="muted">' + esc(dy.intro) + "</p></header><section class=\"card\" data-phase=\"" + ph.id + '">';
+  if (dy.kind === "goal") {
+    h += '<div class="lbl">¿Cómo te llamas?</div><input class="field" data-in="nombre" maxlength="30" placeholder="Tu nombre" value="' + esc(d.nombre || "") + '">' +
+      '<div class="lbl">Elige tu pilar</div><div class="row">' + chips("pilar", PILARES.map(x => [x.id, x.name]), d.pilar) + "</div>";
+    if (p) h += '<div class="lbl">Tu objetivo</div><div class="row">' + chips("objetivo", p.goals, d.objetivo) + '</div><input class="field" data-in="objetivoCustom" maxlength="60" placeholder="O escribe el tuyo (máx. 60)" value="' + esc(d.objetivoCustom || "") + '">';
+    h += '<div class="lbl">3 cualidades que necesito encarnar</div><div class="row">' + chips("rasgos", TRAITS, d.rasgos || [], 3) + "</div>";
+  } else if (dy.kind === "block") {
+    h += '<div class="lbl">¿Cuál es la excusa o resistencia que más te repites?</div><div class="row">' + chips("bloqueo", BLOCKS.map(x => [x.id, x.n]), d.bloqueo) + "</div>";
+    if (b) h += '<div class="lbl">Intensidad (1 suave, 5 muy fuerte)</div><div class="row">' + chips("intensidad", [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(d.intensidad || "")) + "</div>" +
+      '<div class="lbl">Lo que me repetía</div><p class="old">' + esc(b.old) + '</p><div class="lbl">Lo nuevo que instalo</div><div class="row">' + chips("fraseNueva", b.nw, d.fraseNueva) + "</div>";
+  } else if (dy.kind === "reality") {
+    h += p ? '<div class="lbl">Elige 3 escenas de tu nueva realidad</div><div class="row">' + chips("escenas", p.scenes.map(s => [s, SCENE_NAMES[s]]), d.escenas || [], 3) + "</div>" : '<p class="muted">Primero completa el día 1 para elegir tu pilar.</p>';
+    if (p && (d.escenas || []).length === 3) h += '<canvas class="collage" id="cv" aria-label="Vista previa de tu collage"></canvas><div class="row"><label class="btn ghost" for="fotoIn" style="cursor:pointer">' + (fotoImg ? "Cambiar mi foto" : "Añadir mi foto (opcional)") + '</label></div><input id="fotoIn" type="file" accept="image/*" hidden><div class="tip">Ritual de 2 minutos: mira tu collage, respira lento y siente gratitud como si ya lo estuvieras viviendo. ' + timerBtn(120) + "</div>";
+  } else if (dy.kind === "anchor") {
+    h += '<div class="lbl">Tu frase nueva</div><p class="phrase">' + esc(d.fraseNueva || "Aún no elegiste una frase (día 2).") + '</p><div class="tip"><p>1. Al despertar, antes del celular, respira lento tres veces.</p><p>2. Repite tu frase y siente la escena de tu collage durante 5 minutos.</p><p>3. Agradece como si ya fuera real.</p>' + timerBtn(300) + '</div><div class="row">' + chips("ancla", [["si", "Hice mi ancla de hoy"]], d.ancla) + "</div>";
+  } else if (dy.kind === "scale") {
+    h += '<div class="tip">Primero responde “antes”, haz tu sesión de audio y vuelve para responder “después”.</div><div class="lbl">Cómo me siento ahora (1 mal, 5 muy bien)</div><div class="row">' + chips("antes", [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(d.antes || "")) + '</div><div class="lbl">Cómo me siento después de la sesión</div><div class="row">' + chips("despues", [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(d.despues || "")) + "</div>" + (d.antes && d.despues ? '<div class="tip">' + (+d.despues > +d.antes ? "Subiste " + (d.despues - d.antes) + " punto(s). Tu cuerpo responde." : +d.despues === +d.antes ? "Te mantuviste estable. Sigue practicando." : "Hoy bajaste un poco. Eso también es información; descansa y sigue.") + "</div>" : "");
+  } else if (dy.kind === "body") {
+    h += '<div class="tip"><p>Recorre el cuerpo despacio, 20 segundos en cada zona, soltando la tensión al exhalar:</p>' + BODYSCAN.map(z => "<p>• " + z + "</p>").join("") + timerBtn(180) + '</div><div class="lbl">Algo que dejo de hacer a partir de hoy</div><div class="row">' + chips("compromiso", COMMIT, d.compromiso) + "</div>";
+  } else if (dy.kind === "coherence") {
+    const c = d.coherencia || {};
+    h += '<div class="lbl">Energía: ¿qué tanto sostienes tu práctica diaria?</div><div class="row">' + chips("coherencia.energia", [["todos", "Todos los días"], ["algunos", "Algunos días"], ["casi", "Casi nada"]], c.energia) + '</div><div class="lbl">Mente: ¿qué tan posible sientes tu meta? (1 a 5)</div><div class="row">' + chips("coherencia.mente", [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(c.mente || "")) + '</div><div class="lbl">Acción: mi plan actual es</div><div class="row">' + chips("coherencia.accion", [["pequeno", "Muy pequeño para mi meta"], ["justo", "Del tamaño justo"], ["sin", "No tengo plan"]], c.accion) + "</div>";
+    if (c.energia && c.mente && c.accion) h += '<div class="tip">' + coherenceTip({ ...c, mente: +c.mente }).map(x => "<p>" + esc(x) + "</p>").join("") + "</div>";
+  } else if (dy.kind === "plan") {
+    const plan = d.plan || [];
+    h += p ? '<div class="lbl">Elige 3 acciones concretas (' + plan.length + " de 3)</div><div class=\"row\">" + p.acts.map(a => '<button class="chip block" type="button" data-act="addplan" data-v="' + esc(a) + '" aria-pressed="' + plan.some(x => x.t === a) + '">' + esc(a) + "</button>").join("") + '</div><div class="row"><input class="field" id="own" maxlength="60" placeholder="O añade una propia (máx. 60)" style="flex:1"><button class="btn ghost" type="button" data-act="addown">Añadir</button></div>' : '<p class="muted">Primero completa el día 1.</p>';
+    h += plan.map((x, k) => '<div class="plan-item"><div class="top"><b style="font-weight:500">' + esc(x.t) + '</b><button class="x" type="button" data-act="delplan" data-v="' + k + '" aria-label="Quitar">×</button></div><div class="row">' + CUANDO.map(([v, n]) => '<button class="chip" type="button" data-act="when" data-k="' + k + '" data-v="' + v + '" aria-pressed="' + (x.cuando === v) + '">' + n + "</button>").join("") + "</div></div>").join("");
+  } else if (dy.kind === "close") {
+    const plan = d.plan || [];
+    h += '<div class="lbl">¿Qué acciones de tu plan ya hiciste?</div><div class="row">' + chips("hecho", plan.map(x => x.t), d.hecho || [], 3) + '</div><div class="lbl">Mi próximo paso en las próximas 24 horas</div><div class="row">' + chips("proximo", plan.map(x => x.t), d.proximo) + "</div>";
+  }
+  const ok = stepValid();
+  h += '</section><button class="btn full" type="button" data-act="savestep"' + (ok ? "" : " disabled") + ">" + (i === todayIdx() ? "Guardar y terminar el paso" : "Guardar cambios") + "</button>";
+  return h;
+}
+function stepValid() {
+  const k = DAYS[stepIdx].kind, d = draft;
+  if (k === "goal") return !!(d.nombre && d.nombre.trim() && d.pilar && (d.objetivo || (d.objetivoCustom || "").trim()) && (d.rasgos || []).length === 3);
+  if (k === "block") return !!(d.bloqueo && d.intensidad && d.fraseNueva && BLOCKS.find(x => x.id === d.bloqueo).nw.includes(d.fraseNueva));
+  if (k === "reality") return (d.escenas || []).length === 3;
+  if (k === "anchor") return d.ancla === "si";
+  if (k === "scale") return !!(d.antes && d.despues);
+  if (k === "body") return !!d.compromiso;
+  if (k === "coherence") return !!(d.coherencia && d.coherencia.energia && d.coherencia.mente && d.coherencia.accion);
+  if (k === "plan") return (d.plan || []).length === 3 && d.plan.every(x => x.cuando);
+  if (k === "close") return !!d.proximo;
+  return true;
+}
+let tmr = null;
+function timerBtn(sec) { return '<div class="row" style="margin-top:8px"><button class="btn ghost" type="button" data-act="timer" data-v="' + sec + '">Iniciar temporizador (' + fmt(sec) + ')</button></div>'; }
+
+/* ============ Eventos ============ */
+$("#view").addEventListener("input", (e) => { const k = e.target.dataset.in; if (k) { draft[k] = e.target.value; const b = $('[data-act="savestep"]'); if (b) b.disabled = !stepValid(); } });
+$("#view").addEventListener("change", (e) => { if (e.target.id === "fotoIn" && e.target.files[0]) { const f = e.target.files[0]; e.target.value = ""; setFoto(f); } });
+$("#view").addEventListener("click", (e) => {
+  const a = e.target.closest("[data-act]"); if (!a) return; const act = a.dataset.act, v = a.dataset.v;
+  if (act === "begin") { S = newState(); save(); render(); }
+  else if (act === "again") { S = { ...newState(S), cycles: (S.cycles || 0) + 1 }; save(); render(); }
+  else if (act === "session") openSession();
+  else if (act === "step") openStep(todayIdx());
+  else if (act === "challenge") { const d = S.days[todayIdx()] = S.days[todayIdx()] || {}; d.challenge = !d.challenge; save(); render(); }
+  else if (act === "back") { view = "inicio"; render(); }
+  else if (act === "pick") {
+    const k = a.dataset.k, max = +a.dataset.max, path = k.split("."); let o = draft; if (path.length === 2) { o[path[0]] = o[path[0]] || {}; o = o[path[0]]; } const key = path[path.length - 1];
+    if (max > 1) { const arr = o[key] || []; o[key] = arr.includes(v) ? arr.filter(x => x !== v) : arr.length < max ? arr.concat(v) : arr; }
+    else { o[key] = o[key] === v && ["ancla"].includes(k) ? "" : v; if (k === "pilar") { draft.objetivo = ""; draft.escenas = []; draft.plan = []; } if (k === "bloqueo") draft.fraseNueva = ""; }
+    const y = window.scrollY; renderKeep(y);
+  }
+  else if (act === "addplan") { const plan = draft.plan || []; draft.plan = plan.some(x => x.t === v) ? plan.filter(x => x.t !== v) : plan.length < 3 ? plan.concat({ t: v, cuando: "manana" }) : plan; renderKeep(window.scrollY); }
+  else if (act === "addown") { const t = ($("#own").value || "").trim(); const plan = draft.plan || []; if (t && plan.length < 3) { draft.plan = plan.concat({ t, cuando: "manana" }); renderKeep(window.scrollY); } }
+  else if (act === "delplan") { draft.plan = draft.plan.filter((x, k) => k !== +v); renderKeep(window.scrollY); }
+  else if (act === "when") { draft.plan[+a.dataset.k].cuando = v; renderKeep(window.scrollY); }
+  else if (act === "timer") startTimer(a, +v);
+  else if (act === "savestep") {
+    if (!stepValid()) return;
+    const prev = S.data || {}; S.data = JSON.parse(JSON.stringify(draft));
+    if (DAYS[stepIdx].kind === "goal" && prev.pilar && prev.pilar !== draft.pilar) { S.data.escenas = []; S.data.plan = []; }
+    const d = S.days[stepIdx] = S.days[stepIdx] || {}; d.step = true;
+    if (stepIdx === 8 && dayDone(8)) S.done = true;
+    save(); view = "inicio"; render();
+  }
+  else if (act === "download") { const c = $("#cv"); c.toBlob((b) => { const u = URL.createObjectURL(b), l = document.createElement("a"); l.href = u; l.download = "mi-realidad.png"; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }); }
+  else if (act === "delfoto") delFoto();
+  else if (act === "theme") { store.set("e23_theme", v); applyTheme(); render(); }
+  else if (act === "ask-reset") { askMode = "reset"; render(); }
+  else if (act === "ask-wipe") { askMode = "wipe"; render(); }
+  else if (act === "cancel") { askMode = ""; render(); }
+  else if (act === "reset") { S = { ...newState(S), restarts: (S.restarts || 0) }; askMode = ""; save(); view = "inicio"; render(); }
+  else if (act === "wipe") { try { localStorage.removeItem("e23_state"); } catch (e2) {} dbDo("readwrite", s => s.delete("foto")).catch(() => {}); S = null; fotoImg = null; askMode = ""; view = "inicio"; render(); }
+});
+function renderKeep(y) { render(); window.scrollTo(0, y); }
+function startTimer(btn, sec) {
+  if (tmr) { clearInterval(tmr); tmr = null; }
+  const end = Date.now() + sec * 1000; btn.disabled = false;
+  const upd = () => { const left = Math.max(0, Math.round((end - Date.now()) / 1000)); const b = $('[data-act="timer"]'); if (b) b.textContent = left ? "Quedan " + fmt(left) + " (tocar para reiniciar)" : "Listo. Respira y agradece."; if (!left) { clearInterval(tmr); tmr = null; } };
+  upd(); tmr = setInterval(upd, 500);
+}
+$("#nav").addEventListener("click", (e) => { const b = e.target.closest("[data-nav]"); if (b) { view = b.dataset.nav; askMode = ""; render(); } });
+function applyTheme() { const t = store.get("e23_theme", "auto"); if (t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t); }
+applyTheme();
+loadFoto().then(() => render());
+render();
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
