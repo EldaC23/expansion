@@ -261,7 +261,7 @@ const DAYX = [
   { h: "Hoy sueltas lo que te frena", why: "Tu mente repite una frase vieja sin que lo notes. Nombrarla le quita poder y una frase nueva ocupa su lugar.", how: ["Repite en silencio tu frase nueva cada vez que exhalas.", "Elige la resistencia que más te repites y la frase que la reemplaza.", "Haz algo que llevas días posponiendo."], mins: [15, 3, 5] },
   { h: "Hoy ves tu nueva vida", why: "Cuando tu mente ve con detalle hacia dónde vas, empieza a buscar el camino.", how: ["Imagina tu escena con todos los sentidos.", "Arma tu collage y míralo 2 minutos con gratitud.", "Pide algo que normalmente no pedirías."], mins: [15, 5, 5] },
   { h: "Hoy descubres que no es una verdad", why: "Tu mente repite pensamientos como si fueran hechos. Hoy compruebas que muchos son solo suposiciones.", how: ["Cuando suene la voz del ego, salúdala: es solo una suposición.", "Examina tu pensamiento con una pregunta y reescríbelo en neutro.", "Di “no” con calma a algo que no quieres hacer."], mins: [15, 5, 5] },
-  { h: "Hoy le pierdes el miedo al peor escenario", why: "El miedo se agranda cuando no lo miras. Hoy ves lo peor, tu plan y lo mejor, y el miedo toma su tamaño real.", how: ["Respira y deja que el audio baje la tensión de tu cuerpo.", "Responde tres preguntas y mide cuánto baja tu miedo.", "Habla con alguien nuevo sobre lo que quieres crear."], mins: [15, 5, 5] },
+  { h: "Hoy le pierdes el miedo al peor escenario", why: "El miedo se agranda cuando no lo miras. Hoy ves lo peor, tu plan y lo mejor, y el miedo toma su tamaño real.", how: ["Respira y deja que el audio baje la tensión de tu cuerpo.", "Responde las preguntas, ensaya mentalmente y mide cuánto baja tu miedo.", "Habla con alguien nuevo sobre lo que quieres crear."], mins: [15, 8, 5] },
   { h: "Hoy relajas el cuerpo", why: "Un cuerpo en calma sostiene mejor lo que estás creando. Hoy sueltas tensión y eliges qué dejar atrás.", how: ["Deja que el audio afloje tu cuerpo.", "Haz el repaso corporal y elige algo que dejas de hacer.", "Muestra algo tuyo sin esperar a que esté perfecto."], mins: [15, 5, 5] },
   { h: "Hoy decides desde tu nueva versión", why: "Muchas decisiones las toma la versión insegura del pasado. Hoy eliges desde la versión que ya logró sus metas.", how: ["Imagina a tu versión que ya logró sus metas.", "Elige un reto de hoy y decide cómo lo haría esa versión.", "Haz la llamada o manda el mensaje que has evitado."], mins: [15, 3, 5] },
   { h: "Hoy armas tu plan", why: "Una meta sin pasos concretos se queda en deseo. Hoy eliges tres acciones y les pones fecha.", how: ["Piensa en tu primer paso concreto.", "Revisa el tamaño de tu plan y elige tus tres acciones y cuándo las haces.", "Haz hoy la primera acción de tu plan."], mins: [15, 5, 5] },
@@ -314,6 +314,15 @@ const BLOCKS = [
 const PEOR = ["Que me rechacen", "Perder dinero", "Quedar en ridículo", "Fracasar", "Que se burlen de mí", "Quedarme igual que ahora"];
 const PLANB = ["Pedir ayuda a alguien de confianza", "Ajustar el plan e intentarlo de nuevo", "Aprender de lo ocurrido y seguir", "Buscar otra vía para lograrlo", "Descansar y retomar con calma"];
 const MEJOR = ["Lograr mi objetivo", "Sentirme libre", "Recibir apoyo y reconocimiento", "Que me paguen por mi trabajo", "Sentir orgullo de mí", "Abrir nuevas oportunidades"];
+const ACC_MIEDO = ["Contar mi objetivo", "Mostrar mi trabajo", "Hacer una oferta o poner precio", "Pedir ayuda", "Tomar una decisión importante", "Empezar algo nuevo"];
+const PROB = [["menos10", "Menos de 10%"], ["25", "Alrededor de 25%"], ["50", "Alrededor de 50%"], ["75", "Más de 75%"]];
+const VECES = [["nunca", "Nunca ha pasado"], ["una", "Ha pasado una vez"], ["algunas", "Ha pasado algunas veces"], ["muchas", "Ha pasado muchas veces"]];
+const SUPERADO = ["Una pérdida", "Un cambio grande", "Un examen o una prueba", "Empezar de cero", "Una crisis de salud o de dinero", "Hablar frente a otros"];
+const PROBABLE = ["Sale bien con algunos ajustes", "Sale regular y aprendo algo", "Sale mejor de lo que esperaba", "Tarda más de lo previsto, pero avanza"];
+const VALENTIA = ["Aunque me dé miedo, doy el paso", "Ya he superado cosas más difíciles", "Puedo con lo que venga", "El miedo me acompaña, pero no decide por mí", "Soy más fuerte que este miedo"];
+const MINI = ["Escribir el mensaje, sin enviarlo todavía", "Mandar el primer mensaje o hacer la primera llamada", "Dar el primer paso en 5 minutos", "Mostrar solo una parte", "Pedir una sola cosa pequeña"];
+const STARTERS = ["No sé con certeza si…", "Lo que puedo comprobar es…", "Es una suposición mía que…"];
+const lab = (arr, v) => (arr.find(x => x[0] === v) || [v, v])[1];
 const RETOS = ["Contactar a alguien", "Poner un precio o hacer una oferta", "Publicar o mostrar algo", "Decidir un gasto", "Empezar algo que postergo", "Poner un límite", "Tomar una decisión importante"];
 const DECIS = ["Daría el paso sin esperar sentir seguridad total", "Lo haría imperfecto y lo mejoraría después", "Pediría ayuda sin pena", "Diría que sí", "Diría que no con calma", "Lo decidiría desde la calma, sin prisa"];
 const BANK = {
@@ -327,7 +336,7 @@ const BANK = {
   perfecto: ["Entrega o publica algo al 80% sin pulirlo más", "Termina una tarea en la mitad del tiempo que sueles tomarte", "Deja un detalle imperfecto a propósito", "Muestra un borrador a alguien", "Haz algo hoy sin buscar primero el mejor método"],
   empezar: ["Escribe tu primer paso y hazlo en 10 minutos", "Elige una sola cosa y empieza aunque no esté clara", "Divide tu meta en tres pasos pequeños", "Haz una versión mínima de tu proyecto hoy", "Pregunta cómo empezó alguien que ya lo logró"]
 };
-const challengeFor = (i) => { const b = (S && S.data) ? S.data.bloqueo : ""; return (i >= 2 && i <= 6 && BANK[b]) ? BANK[b][(i - 2) % BANK[b].length] : DAYX[i].how[2]; };
+const challengeFor = (i) => { if (i === 4 && S && S.data && S.data.miniAccion) return "Hoy haz esto en pequeño: " + S.data.miniAccion; const b = (S && S.data) ? S.data.bloqueo : ""; return (i >= 2 && i <= 6 && BANK[b]) ? BANK[b][(i - 2) % BANK[b].length] : DAYX[i].how[2]; };
 const BODYSCAN = ["Frente y ojos", "Mandíbula y lengua", "Cuello y hombros", "Pecho y respiración", "Abdomen", "Manos y brazos", "Piernas y pies"];
 const COMMIT = ["Postergar mi paso del día", "Compararme con otros", "Hablar mal de mí", "Revisar redes al despertar", "Decir “no puedo”", "Quedarme en la queja", "Gastar sin conciencia", "Aislarme"];
 const CUANDO = [["hoy", "Hoy"], ["manana", "Mañana"], ["tres", "En 3 días"], ["semana", "Esta semana"]];
@@ -344,10 +353,10 @@ let fotoImg = null;
 
 const save = () => store.set(PREVIEW ? "e23_pstate" : "e23_state", S);
 const newState = (keep) => ({ start: dayKey(), days: {}, data: keep ? keep.data : {}, restarts: keep ? keep.restarts : 0, cycles: keep ? keep.cycles : 0, note: "", done: false });
-const FIELDS = [["nombre", "pilar", "objetivo", "objetivoCustom", "rasgos"], ["bloqueo", "intensidad", "fraseNueva"], ["escenas"], ["pensamiento", "evidencia", "evidSi", "evidNo", "neutra"], ["miedoAntes", "peor", "planPractico", "mejor", "miedoDespues"], ["compromiso"], ["reto", "decision"], ["tamano", "plan"], ["hecho", "proximo"]];
+const FIELDS = [["nombre", "pilar", "objetivo", "objetivoCustom", "rasgos"], ["bloqueo", "intensidad", "fraseNueva"], ["escenas"], ["pensamiento", "evidencia", "evidSi", "evidNo", "neutra"], ["miedoAntes", "accionMiedo", "peor", "prob", "veces", "planPractico", "superado", "mejor", "probable", "valentia", "ensayo", "miniAccion", "miedoDespues"], ["compromiso"], ["reto", "decision"], ["tamano", "plan"], ["hecho", "proximo"]];
 function makePreview(i, doneAll) {
   const real = REAL || store.get("e23_state", null), rd = (real && real.data) || {}, p0 = PILARES[0];
-  const sample = { nombre: "Tu nombre", pilar: p0.id, objetivo: p0.goals[1], objetivoCustom: "", rasgos: ["Calma", "Valentía", "Gratitud"], bloqueo: "tiempo", intensidad: "3", fraseNueva: BLOCKS[1].nw[0], escenas: p0.scenes.slice(0, 3), pensamiento: BLOCKS[1].old, evidencia: "suposicion", evidSi: "", evidNo: "", neutra: BLOCKS[1].neu[0], miedoAntes: "4", peor: PEOR[0], planPractico: PLANB[0], mejor: MEJOR[0], miedoDespues: "2", compromiso: COMMIT[1], reto: RETOS[0], decision: DECIS[0], tamano: "pequeno", plan: [{ t: p0.acts[0], cuando: "hoy" }, { t: p0.acts[1], cuando: "manana" }, { t: p0.acts[2], cuando: "semana" }], hecho: [], proximo: "" };
+  const sample = { nombre: "Tu nombre", pilar: p0.id, objetivo: p0.goals[1], objetivoCustom: "", rasgos: ["Calma", "Valentía", "Gratitud"], bloqueo: "tiempo", intensidad: "3", fraseNueva: BLOCKS[1].nw[0], escenas: p0.scenes.slice(0, 3), pensamiento: BLOCKS[1].old, evidencia: "suposicion", evidSi: "", evidNo: "", neutra: BLOCKS[1].neu[0], miedoAntes: "4", accionMiedo: ACC_MIEDO[0], peor: PEOR[0], prob: "25", veces: "nunca", planPractico: PLANB[0], superado: SUPERADO[1], mejor: MEJOR[0], probable: PROBABLE[0], valentia: VALENTIA[0], ensayo: "si", miniAccion: MINI[0], miedoDespues: "2", compromiso: COMMIT[1], reto: RETOS[0], decision: DECIS[0], tamano: "pequeno", plan: [{ t: p0.acts[0], cuando: "hoy" }, { t: p0.acts[1], cuando: "manana" }, { t: p0.acts[2], cuando: "semana" }], hecho: [], proximo: "" };
   const data = { ...sample }; Object.keys(rd).forEach(k => { const v = rd[k]; if (v && (!Array.isArray(v) || v.length)) data[k] = v; });
   if (!doneAll) for (let d = i; d < 9; d++) FIELDS[d].forEach(k => { delete data[k]; });
   if (i > 0 || doneAll) data.pilar = data.pilar || p0.id;
@@ -653,7 +662,7 @@ function summaryDay(i) {
   if (i === 1 && b) out.push("Lo que me repetía: " + b.old, "Lo nuevo: " + d.fraseNueva, "Intensidad: " + d.intensidad + " de 5");
   if (i === 2) out.push("Escenas: " + (d.escenas || []).map(s => SCENE_NAMES[s]).join(", "));
   if (i === 3) out.push("Pensamiento: " + d.pensamiento, "Evidencia: " + ({ suposicion: "es solo una suposición", parcial: "algo de evidencia", cierto: "me parece cierto" })[d.evidencia], "En neutro: " + d.neutra);
-  if (i === 4) out.push("Miedo: de " + d.miedoAntes + " a " + d.miedoDespues + " sobre 5", "Lo peor: " + d.peor, "Mi plan: " + d.planPractico, "Lo mejor: " + d.mejor);
+  if (i === 4) out.push("Miedo: de " + d.miedoAntes + " a " + d.miedoDespues + " sobre 5", "Me da miedo: " + d.accionMiedo, "Lo peor: " + d.peor, "Probabilidad real: " + lab(PROB, d.prob).toLowerCase() + "; " + lab(VECES, d.veces).toLowerCase(), "Mi plan: " + d.planPractico, "Ya superé: " + d.superado, "Lo mejor: " + d.mejor, "Mi frase de valentía: " + d.valentia, "Mi mini acción: " + d.miniAccion);
   if (i === 5) out.push("Compromiso: dejo de " + String(d.compromiso || "").toLowerCase());
   if (i === 6) out.push("Mi reto: " + d.reto, "Mi nueva versión decide: " + d.decision);
   if (i === 7) out.push("Tamaño del plan: " + ({ pequeno: "muy pequeño para mi meta", justo: "del tamaño justo", sin: "aún sin plan" })[d.tamano]);
@@ -711,16 +720,27 @@ function vDia() {
     h += p ? '<div class="lbl">Elige 3 escenas de tu nueva realidad</div><div class="row">' + chips("escenas", p.scenes.map(s => [s, SCENE_NAMES[s]]), d.escenas || [], 3) + "</div>" : '<p class="muted">Primero completa el día 1 para elegir tu pilar.</p>';
     if (p && (d.escenas || []).length === 3) h += '<canvas class="collage" id="cv" aria-label="Vista previa de tu collage"></canvas><div class="row"><label class="btn ghost" for="fotoIn" style="cursor:pointer">' + (fotoImg ? "Cambiar mi foto" : "Añadir mi foto (opcional)") + '</label></div><input id="fotoIn" type="file" accept="image/*" hidden><div class="tip">Ritual de 2 minutos: mira tu collage, respira lento y siente gratitud como si ya lo estuvieras viviendo. ' + timerBtn(120) + "</div>";
   } else if (dy.kind === "socratic") {
-    const bl = BLOCKS.find(x => x.id === d.bloqueo), neus = bl ? bl.neu : BLOCKS.slice(0, 3).map(x => x.neu[0]);
+    const bl = BLOCKS.find(x => x.old === d.pensamiento);
     h += '<div class="lbl">1. Tu pensamiento limitante</div>' + oneLine("pensamiento", BLOCKS.map(x => x.old), d, "O escribe el tuyo (máx. 100)") +
       '<div class="lbl">2. ¿Tienes evidencia 100% real de que esto es verdad, o es solo una suposición de tu mente?</div><div class="row">' + chips("evidencia", [["suposicion", "Es solo una suposición"], ["parcial", "Tengo algo de evidencia"], ["cierto", "Me parece cierto"]], d.evidencia) + "</div>";
     if (d.evidencia === "parcial" || d.evidencia === "cierto") h += '<input class="field" data-in="evidSi" maxlength="100" placeholder="¿Qué evidencia tienes? (opcional)" value="' + esc(d.evidSi || "") + '"><input class="field" data-in="evidNo" maxlength="100" placeholder="¿Qué evidencia tienes de lo contrario? (opcional)" value="' + esc(d.evidNo || "") + '">';
-    h += '<div class="lbl">3. Reescríbelo como un hecho objetivo y neutro</div>' + oneLine("neutra", neus, d, "O escríbelo con tus palabras (máx. 100)");
+    h += '<div class="lbl">3. Reescríbelo como un hecho objetivo y neutro</div>';
+    if (bl) h += '<p class="small muted">Ejemplos para tu pensamiento:</p>' + oneLine("neutra", bl.neu, d, "O escríbelo con tus palabras (máx. 100)");
+    else h += '<p class="small muted">Es tu propio pensamiento, así que escríbelo con tus palabras. Una pista para empezar:</p><div class="row">' + STARTERS.map(t => '<button class="chip" type="button" data-act="starter" data-v="' + esc(t) + '">' + esc(t) + "</button>").join("") + '</div><input class="field" data-in="neutra" maxlength="100" placeholder="Tu frase en neutro (máx. 100)" value="' + esc(d.neutra || "") + '">';
   } else if (dy.kind === "decat") {
     h += '<div class="lbl">¿Qué tan grande se siente tu miedo ahora? (1 pequeño, 5 enorme)</div>' + scale5("miedoAntes", d) +
+      '<div class="lbl">¿Qué acción te da miedo hoy?</div>' + oneLine("accionMiedo", ACC_MIEDO, d, "O escríbela (máx. 100)") +
       '<div class="lbl">1. ¿Qué es lo peor que podría pasar si tomas acción hoy?</div>' + oneLine("peor", PEOR, d, "O escríbelo (máx. 100)") +
-      '<div class="lbl">2. Si eso ocurriera, ¿cuál sería tu plan práctico para solucionarlo?</div>' + oneLine("planPractico", PLANB, d, "O escríbelo (máx. 100)") +
-      '<div class="lbl">3. ¿Y qué es lo mejor que podría pasar si todo sale bien?</div>' + oneLine("mejor", MEJOR, d, "O escríbelo (máx. 100)") +
+      '<div class="lbl">2. Ponle tamaño real: ¿qué tan probable es que pase?</div><div class="row">' + chips("prob", PROB, d.prob) + '</div><div class="lbl">¿Cuántas veces ha pasado de verdad?</div><div class="row">' + chips("veces", VECES, d.veces) + "</div>";
+    if (d.prob && d.veces) h += '<div class="tip">Tu mente lo siente como un ' + (d.miedoAntes || "?") + " de 5, pero la probabilidad real es " + lab(PROB, d.prob).toLowerCase() + " y " + lab(VECES, d.veces).toLowerCase() + ". El miedo suele agrandar lo que no se mira.</div>";
+    h += '<div class="lbl">3. Si eso ocurriera, ¿cuál sería tu plan práctico para solucionarlo?</div>' + oneLine("planPractico", PLANB, d, "O escríbelo (máx. 100)") +
+      '<div class="lbl">4. Recuerda una situación difícil que sí superaste</div>' + oneLine("superado", SUPERADO, d, "O escríbela (máx. 100)");
+    if (d.superado) h += '<div class="tip">Ya superaste eso. Tienes recursos para esto también.</div>';
+    h += '<div class="lbl">5. ¿Y qué es lo mejor que podría pasar si todo sale bien?</div>' + oneLine("mejor", MEJOR, d, "O escríbelo (máx. 100)") +
+      '<div class="lbl">Y lo más probable (opcional)</div>' + oneLine("probable", PROBABLE, d, "O escríbelo (máx. 100)") +
+      '<div class="lbl">6. Tu frase de valentía</div>' + oneLine("valentia", VALENTIA, d, "O escríbela (máx. 100)") +
+      '<div class="lbl">7. Ensayo mental</div><div class="tip"><p>1. Cierra los ojos y respira lento tres veces.</p><p>2. Imagínate dando el paso que te da miedo.</p><p>3. Mira lo peor que podría pasar y a ti resolviéndolo con calma, con tu plan.</p><p>4. Mira ahora lo mejor y siente la satisfacción.</p><p>5. Repite tu frase de valentía.</p>' + timerBtn(90) + '</div><div class="row">' + chips("ensayo", [["si", "Hice mi ensayo mental"]], d.ensayo) + "</div>" +
+      '<div class="lbl">8. La versión más pequeña de esa acción que puedes hacer hoy</div>' + oneLine("miniAccion", MINI, d, "O escríbela (máx. 100)") + '<p class="small muted">Esta será tu acción real de hoy.</p>' +
       '<div class="lbl">Ahora, ¿qué tan grande se siente tu miedo? (1 pequeño, 5 enorme)</div>' + scale5("miedoDespues", d);
     if (d.miedoAntes && d.miedoDespues) h += '<div class="tip">' + (+d.miedoDespues < +d.miedoAntes ? "Tu miedo bajó de " + d.miedoAntes + " a " + d.miedoDespues + ". Mirarlo de frente le quitó tamaño." : +d.miedoDespues === +d.miedoAntes ? "Tu miedo se mantiene igual. Repite el ejercicio mañana o apóyate en tu plan práctico." : "Hoy el miedo subió un poco. Es normal; respira y sigue con tu plan.") + "</div>";
   } else if (dy.kind === "body") {
@@ -746,8 +766,8 @@ function stepValid() {
   if (k === "goal") return !!(d.nombre && d.nombre.trim() && d.pilar && (d.objetivo || (d.objetivoCustom || "").trim()) && (d.rasgos || []).length === 3);
   if (k === "block") return !!(d.bloqueo && d.intensidad && d.fraseNueva && BLOCKS.find(x => x.id === d.bloqueo).nw.includes(d.fraseNueva));
   if (k === "reality") return (d.escenas || []).length === 3;
-  if (k === "socratic") return !!((d.pensamiento || "").trim() && d.evidencia && (d.neutra || "").trim());
-  if (k === "decat") return !!(d.miedoAntes && (d.peor || "").trim() && (d.planPractico || "").trim() && (d.mejor || "").trim() && d.miedoDespues);
+  if (k === "socratic") return !!((d.pensamiento || "").trim() && d.evidencia && (d.neutra || "").trim() && !STARTERS.includes((d.neutra || "").trim()));
+  if (k === "decat") return !!(d.miedoAntes && (d.accionMiedo || "").trim() && (d.peor || "").trim() && d.prob && d.veces && (d.planPractico || "").trim() && (d.superado || "").trim() && (d.mejor || "").trim() && (d.valentia || "").trim() && d.ensayo === "si" && (d.miniAccion || "").trim() && d.miedoDespues);
   if (k === "body") return !!d.compromiso;
   if (k === "reframe") return !!((d.reto || "").trim() && (d.decision || "").trim());
   if (k === "plan") return !!d.tamano && (d.plan || []).length === 3 && d.plan.every(x => x.cuando);
@@ -780,7 +800,8 @@ function maybeWelcome() { if (!PREVIEW && !wel.open && !sess.open && view === "i
 
 /* ============ Eventos ============ */
 $("#view").addEventListener("input", (e) => { const k = e.target.dataset.in; if (k) { draft[k] = e.target.value; const b = $('[data-act="savestep"]'); if (b) b.disabled = !stepValid(); } });
-$("#view").addEventListener("change", (e) => { if (e.target.id === "fotoIn" && e.target.files[0]) { const f = e.target.files[0]; e.target.value = ""; setFoto(f); } });
+$("#view").addEventListener("change", (e) => {
+  if (e.target.dataset && e.target.dataset.in === "pensamiento") { const ob = BLOCKS.find(b => b.neu.includes(draft.neutra)); if (ob && ob.old !== draft.pensamiento) draft.neutra = ""; renderKeep(window.scrollY); return; } if (e.target.id === "fotoIn" && e.target.files[0]) { const f = e.target.files[0]; e.target.value = ""; setFoto(f); } });
 $("#view").addEventListener("click", (e) => {
   const a = e.target.closest("[data-act]"); if (!a) return; const act = a.dataset.act, v = a.dataset.v;
   if (act === "pon") { REAL = S; PREVIEW = true; store.set("e23_preview", true); S = makePreview(0); save(); view = "inicio"; render(); }
@@ -797,7 +818,7 @@ $("#view").addEventListener("click", (e) => {
   else if (act === "pick") {
     const k = a.dataset.k, max = +a.dataset.max, path = k.split("."); let o = draft; if (path.length === 2) { o[path[0]] = o[path[0]] || {}; o = o[path[0]]; } const key = path[path.length - 1];
     if (max > 1) { const arr = o[key] || []; o[key] = arr.includes(v) ? arr.filter(x => x !== v) : arr.length < max ? arr.concat(v) : arr; }
-    else { o[key] = o[key] === v && ["ancla"].includes(k) ? "" : v; if (k === "pilar") { draft.objetivo = ""; draft.escenas = []; draft.plan = []; } if (k === "bloqueo") draft.fraseNueva = ""; }
+    else { const prev = o[key]; o[key] = o[key] === v && ["ancla", "ensayo"].includes(k) ? "" : v; if (k === "pensamiento") { const pb = BLOCKS.find(b => b.old === prev); if (pb && pb.neu.includes(draft.neutra)) draft.neutra = ""; } if (k === "pilar") { draft.objetivo = ""; draft.escenas = []; draft.plan = []; } if (k === "bloqueo") draft.fraseNueva = ""; }
     const y = window.scrollY; renderKeep(y);
   }
   else if (act === "addplan") { const plan = draft.plan || []; draft.plan = plan.some(x => x.t === v) ? plan.filter(x => x.t !== v) : plan.length < 3 ? plan.concat({ t: v, cuando: "manana" }) : plan; renderKeep(window.scrollY); }
@@ -805,6 +826,7 @@ $("#view").addEventListener("click", (e) => {
   else if (act === "delplan") { draft.plan = draft.plan.filter((x, k) => k !== +v); renderKeep(window.scrollY); }
   else if (act === "when") { draft.plan[+a.dataset.k].cuando = v; renderKeep(window.scrollY); }
   else if (act === "timer") startTimer(a, +v);
+  else if (act === "starter") { draft.neutra = v + " "; const f = document.querySelector('[data-in="neutra"]'); if (f) { f.value = draft.neutra; f.focus(); } const sb = document.querySelector('[data-act="savestep"]'); if (sb) sb.disabled = !stepValid(); }
   else if (act === "savestep") {
     if (!stepValid()) return;
     const prev = S.data || {}; S.data = JSON.parse(JSON.stringify(draft));
