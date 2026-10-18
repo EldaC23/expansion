@@ -178,6 +178,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 .tc-body { display: grid; gap: 6px; min-width: 0; }
 .tc-body p { font-size: 14.5px; color: var(--muted); }
 .tc-state { font: 500 11px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.commit { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.commit p { font: 400 20px/1.25 var(--f-display); }
 .celebrate { border-radius: 22px; padding: 20px; display: grid; gap: 6px; text-align: center; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
 .celebrate .big { font: 400 32px/1.1 var(--f-display); }
 .whybanner { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; padding: 16px; border-radius: 18px; background: linear-gradient(150deg, color-mix(in srgb, var(--accent) 20%, var(--surface)), var(--surface) 80%); border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); }
@@ -247,22 +249,22 @@ const DAYS = [
   { t: "Tu punto de partida", intro: "Define hacia dónde vas y en quién necesitas convertirte.", kind: "goal", ch: "Cuéntale a una persona de confianza cuál es tu objetivo." },
   { t: "El viejo software", intro: "Identifica la resistencia que más te repites y elige la frase que la reemplaza.", kind: "block", ch: "Haz hoy algo que llevas días posponiendo y te da pereza." },
   { t: "Tu mapa de realidad", intro: "Arma una imagen de la vida que vas a crear y mírala con gratitud.", kind: "reality", ch: "Pide algo que normalmente no pedirías: un favor, un descuento o una opinión." },
-  { t: "Ancla de la mañana", intro: "Los primeros minutos del día fijan el tono de todo lo demás.", kind: "anchor", ch: "Di “no” con calma a algo que no quieres hacer." },
-  { t: "Cómo te sientes", intro: "Mide tu estado antes y después de la sesión para ver el cambio.", kind: "scale", ch: "Habla con alguien nuevo sobre lo que quieres crear." },
+  { t: "Desmontar la creencia", intro: "Comprueba si tu pensamiento limitante es un hecho o solo una suposición.", kind: "socratic", ch: "Di “no” con calma a algo que no quieres hacer." },
+  { t: "Neutralizar el miedo", intro: "Mira de frente el peor escenario y baja el tamaño de tu miedo.", kind: "decat", ch: "Habla con alguien nuevo sobre lo que quieres crear." },
   { t: "Cuerpo en calma", intro: "Relaja el cuerpo para poder sostener lo que estás creando.", kind: "body", ch: "Muestra algo tuyo sin esperar a que esté perfecto." },
-  { t: "Filtro de coherencia", intro: "Revisa si energía, mente y acción tienen el mismo tamaño.", kind: "coherence", ch: "Haz la llamada o manda el mensaje que has estado evitando." },
-  { t: "Tu plan de acción", intro: "Elige tres acciones concretas y ponles fecha.", kind: "plan", ch: "Haz hoy la primera acción de tu plan." },
+  { t: "Tu nueva versión", intro: "Decide desde la versión de ti que ya logró sus metas.", kind: "reframe", ch: "Haz la llamada o manda el mensaje que has estado evitando." },
+  { t: "Tu plan de acción", intro: "Revisa el tamaño de tu plan y elige tres acciones concretas con fecha.", kind: "plan", ch: "Haz hoy la primera acción de tu plan." },
   { t: "El primer paso real", intro: "Cierra el ciclo con acción y decide tu próximo paso.", kind: "close", ch: "Da el siguiente paso de tu plan y decide el que sigue." }
 ];
 const DAYX = [
   { h: "Hoy defines quién vas a ser", why: "Todo cambio empieza cuando decides hacia dónde vas y en quién te conviertes. Hoy lo dejas claro.", how: ["Respira con el círculo y piensa en tu objetivo como si ya fuera real.", "Elige tu pilar, tu objetivo y tres cualidades que quieres encarnar.", "Cuéntale a una persona de confianza cuál es tu objetivo."], mins: [15, 3, 5] },
   { h: "Hoy sueltas lo que te frena", why: "Tu mente repite una frase vieja sin que lo notes. Nombrarla le quita poder y una frase nueva ocupa su lugar.", how: ["Repite en silencio tu frase nueva cada vez que exhalas.", "Elige la resistencia que más te repites y la frase que la reemplaza.", "Haz algo que llevas días posponiendo."], mins: [15, 3, 5] },
   { h: "Hoy ves tu nueva vida", why: "Cuando tu mente ve con detalle hacia dónde vas, empieza a buscar el camino.", how: ["Imagina tu escena con todos los sentidos.", "Arma tu collage y míralo 2 minutos con gratitud.", "Pide algo que normalmente no pedirías."], mins: [15, 5, 5] },
-  { h: "Hoy lo sientes en el cuerpo", why: "Sentir tu nueva realidad la vuelve familiar. La mañana es el mejor momento para instalarla.", how: ["Siente tu escena y repite tu frase nueva.", "Haz tu ancla de la mañana: 5 minutos al despertar.", "Di “no” con calma a algo que no quieres hacer."], mins: [15, 5, 5] },
-  { h: "Hoy mides tu cambio", why: "Lo que se mide se nota. Compara cómo te sientes antes y después, y verás tu avance.", how: ["Haz la sesión y nota cómo cambia tu estado.", "Anota cómo te sentías antes y cómo te sientes ahora.", "Habla con alguien nuevo sobre lo que quieres crear."], mins: [15, 2, 5] },
+  { h: "Hoy descubres que no es una verdad", why: "Tu mente repite pensamientos como si fueran hechos. Hoy compruebas que muchos son solo suposiciones.", how: ["Cuando suene la voz del ego, salúdala: es solo una suposición.", "Examina tu pensamiento con una pregunta y reescríbelo en neutro.", "Di “no” con calma a algo que no quieres hacer."], mins: [15, 5, 5] },
+  { h: "Hoy le pierdes el miedo al peor escenario", why: "El miedo se agranda cuando no lo miras. Hoy ves lo peor, tu plan y lo mejor, y el miedo toma su tamaño real.", how: ["Respira y deja que el audio baje la tensión de tu cuerpo.", "Responde tres preguntas y mide cuánto baja tu miedo.", "Habla con alguien nuevo sobre lo que quieres crear."], mins: [15, 5, 5] },
   { h: "Hoy relajas el cuerpo", why: "Un cuerpo en calma sostiene mejor lo que estás creando. Hoy sueltas tensión y eliges qué dejar atrás.", how: ["Deja que el audio afloje tu cuerpo.", "Haz el repaso corporal y elige algo que dejas de hacer.", "Muestra algo tuyo sin esperar a que esté perfecto."], mins: [15, 5, 5] },
-  { h: "Hoy alineas tus tres capas", why: "Energía, mente y acción deben tener el mismo tamaño. Hoy ves dónde hay un desajuste y cómo cerrarlo.", how: ["Piensa en tu meta como algo posible.", "Responde el filtro de coherencia y lee tu ajuste.", "Haz la llamada o manda el mensaje que has evitado."], mins: [15, 3, 5] },
-  { h: "Hoy armas tu plan", why: "Una meta sin pasos concretos se queda en deseo. Hoy eliges tres acciones y les pones fecha.", how: ["Piensa en tu primer paso concreto.", "Elige tus tres acciones y cuándo las haces.", "Haz hoy la primera acción de tu plan."], mins: [15, 5, 5] },
+  { h: "Hoy decides desde tu nueva versión", why: "Muchas decisiones las toma la versión insegura del pasado. Hoy eliges desde la versión que ya logró sus metas.", how: ["Imagina a tu versión que ya logró sus metas.", "Elige un reto de hoy y decide cómo lo haría esa versión.", "Haz la llamada o manda el mensaje que has evitado."], mins: [15, 3, 5] },
+  { h: "Hoy armas tu plan", why: "Una meta sin pasos concretos se queda en deseo. Hoy eliges tres acciones y les pones fecha.", how: ["Piensa en tu primer paso concreto.", "Revisa el tamaño de tu plan y elige tus tres acciones y cuándo las haces.", "Haz hoy la primera acción de tu plan."], mins: [15, 5, 5] },
   { h: "Hoy das el primer paso real", why: "Cierras el ciclo con acción. Lo que hagas hoy demuestra que tu cambio es real.", how: ["Siente la confianza de quien ya está actuando.", "Marca lo que ya hiciste y elige tu próximo paso.", "Da el siguiente paso y decide el que sigue."], mins: [15, 3, 5] }
 ];
 const IC = {
@@ -277,7 +279,7 @@ const IC = {
 const svg = (n) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + IC[n] + "</svg>";
 const CUES = {
   ver: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja la frente, la mandíbula y los hombros. Suelta un poco más con cada exhalación."], [.22, "Piensa en tu objetivo: {objetivo}."], [.38, "Imagínalo como si ya fuera real. ¿Dónde estás? ¿Qué ves, qué oyes, qué sientes?"], [.55, "Ahora siente que eres {cualidades}. Nota cómo se siente tu cuerpo siendo esa persona."], [.72, "Agradece, como si ya lo estuvieras viviendo."], [.88, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]],
-  sentir: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja el cuerpo de arriba abajo: cara, cuello, pecho, abdomen, piernas."], [.22, "Recuerda tu frase nueva: “{frase}”. Repítela en silencio al exhalar."], [.4, "Visualiza tu escena y deja que la emoción suba: calma, alegría, seguridad."], [.58, "Quédate en esa emoción. No hace falta pensar, solo sentir."], [.75, "Agradece con todo el cuerpo, como si ya fuera tu vida."], [.9, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]],
+  sentir: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja el cuerpo de arriba abajo: cara, cuello, pecho, abdomen, piernas."], [.22, "Si aparece la voz que dice «{pensamiento}», salúdala y suéltala: es solo una suposición."], [.38, "Recuerda tu frase nueva: “{frase}”. Repítela en silencio al exhalar."], [.55, "Visualiza tu escena y deja que la emoción suba: calma, alegría, seguridad."], [.72, "Quédate en esa emoción. Agradece con todo el cuerpo, como si ya fuera tu vida."], [.9, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]],
   actuar: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja la frente, la mandíbula y los hombros."], [.22, "Piensa en tu meta: {objetivo}. Siente que ya es posible."], [.4, "Piensa en tu siguiente paso concreto. ¿Cuál es la primera acción?"], [.58, "Imagínate haciéndola con calma y decisión."], [.75, "Siente la confianza de alguien que actúa. Eres {cualidades}."], [.9, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]]
 };
 const PILARES = [
@@ -299,15 +301,33 @@ const PILARES = [
 ];
 const TRAITS = ["Constancia", "Valentía", "Confianza", "Disciplina", "Calma", "Visibilidad", "Generosidad", "Claridad", "Gratitud", "Determinación"];
 const BLOCKS = [
-  { id: "impostor", n: "Siento que no soy suficiente", old: "No soy suficiente para esto", nw: ["Tengo lo necesario para crear esto y lo voy aprendiendo", "Mi valor no depende de mis resultados y mi voz importa"] },
-  { id: "tiempo", n: "No tengo tiempo", old: "No tengo tiempo", nw: ["Mi tiempo alcanza para lo que es prioridad", "Cada día doy un paso y los pasos suman"] },
-  { id: "dinero", n: "No tengo dinero para empezar", old: "No tengo dinero para empezar", nw: ["Empiezo con lo que tengo y el recurso aparece al moverme", "Soy capaz de generar valor y de recibir por él"] },
-  { id: "tarde", n: "Ya es tarde para mí", old: "Ya es tarde para mí", nw: ["Mi momento es ahora y siempre lo fue", "Lo que hoy empiezo, mañana es mi historia"] },
-  { id: "merezco", n: "No lo merezco", old: "No lo merezco", nw: ["Merezco recibir lo que creo con amor y esfuerzo", "Merezco abundancia, así como soy"] },
-  { id: "dirán", n: "Me preocupa qué dirán", old: "¿Qué van a decir de mí?", nw: ["Mi vida es mía y elijo desde lo que siento", "Quien me quiere me apoya y el resto no es mi tarea"] },
-  { id: "exito", n: "Me da miedo que me vaya bien", old: "Si me va bien, algo malo va a pasar", nw: ["Estar bien es seguro para mí y para quienes amo", "Puedo brillar y seguir siendo yo"] },
-  { id: "empezar", n: "No sé por dónde empezar", old: "No sé por dónde empezar", nw: ["Doy el siguiente paso pequeño y el camino se aclara", "No necesito verlo todo, necesito empezar"] }
+  { id: "impostor", n: "Siento que no soy suficiente", old: "No soy suficiente para esto", nw: ["Tengo lo necesario para crear esto y lo voy aprendiendo", "Mi valor no depende de mis resultados y mi voz importa"], neu: ["Hay cosas que domino y cosas que sigo aprendiendo", "Empezar sin saberlo todo es normal"] },
+  { id: "tiempo", n: "No tengo tiempo", old: "No tengo tiempo", nw: ["Mi tiempo alcanza para lo que es prioridad", "Cada día doy un paso y los pasos suman"], neu: ["Tengo 24 horas al día y puedo elegir en qué usarlas", "Con 30 minutos al día puedo avanzar"] },
+  { id: "dinero", n: "No tengo dinero para empezar", old: "No tengo dinero para empezar", nw: ["Empiezo con lo que tengo y el recurso aparece al moverme", "Soy capaz de generar valor y de recibir por él"], neu: ["Hoy tengo recursos limitados y puedo dar pasos que no cuestan dinero", "El dinero es una herramienta que puedo aprender a generar"] },
+  { id: "tarde", n: "Ya es tarde para mí", old: "Ya es tarde para mí", nw: ["Mi momento es ahora y siempre lo fue", "Lo que hoy empiezo, mañana es mi historia"], neu: ["Mucha gente empieza a mi edad y lo logra", "Hoy es el día más temprano que me queda para empezar"] },
+  { id: "merezco", n: "No lo merezco", old: "No lo merezco", nw: ["Merezco recibir lo que creo con amor y esfuerzo", "Merezco abundancia, así como soy"], neu: ["Recibir es algo que las personas hacen todos los días", "Lo que merezco no depende de lo que hice ayer"] },
+  { id: "dirán", n: "Me preocupa qué dirán", old: "¿Qué van a decir de mí?", nw: ["Mi vida es mía y elijo desde lo que siento", "Quien me quiere me apoya y el resto no es mi tarea"], neu: ["No sé lo que piensan los demás, solo lo imagino", "La opinión de otros no decide mi camino"] },
+  { id: "exito", n: "Me da miedo que me vaya bien", old: "Si me va bien, algo malo va a pasar", nw: ["Estar bien es seguro para mí y para quienes amo", "Puedo brillar y seguir siendo yo"], neu: ["Que me vaya bien no tiene por qué traer algo malo", "Puedo tener éxito y cuidar mis relaciones"] },
+  { id: "perfecto", n: "Tiene que quedar perfecto", old: "Si no es perfecto, mejor no lo muestro", nw: ["Hecho es mejor que perfecto: lo mejoro en el camino", "Mi valor no depende de que todo salga perfecto"], neu: ["Puedo mostrar algo al 80% y ajustarlo después", "Un resultado imperfecto sigue siendo útil y mejorable"] },
+  { id: "empezar", n: "No sé por dónde empezar", old: "No sé por dónde empezar", nw: ["Doy el siguiente paso pequeño y el camino se aclara", "No necesito verlo todo, necesito empezar"], neu: ["Puedo empezar con un solo paso pequeño", "No necesito el plan completo para comenzar"] }
 ];
+const PEOR = ["Que me rechacen", "Perder dinero", "Quedar en ridículo", "Fracasar", "Que se burlen de mí", "Quedarme igual que ahora"];
+const PLANB = ["Pedir ayuda a alguien de confianza", "Ajustar el plan e intentarlo de nuevo", "Aprender de lo ocurrido y seguir", "Buscar otra vía para lograrlo", "Descansar y retomar con calma"];
+const MEJOR = ["Lograr mi objetivo", "Sentirme libre", "Recibir apoyo y reconocimiento", "Que me paguen por mi trabajo", "Sentir orgullo de mí", "Abrir nuevas oportunidades"];
+const RETOS = ["Contactar a alguien", "Poner un precio o hacer una oferta", "Publicar o mostrar algo", "Decidir un gasto", "Empezar algo que postergo", "Poner un límite", "Tomar una decisión importante"];
+const DECIS = ["Daría el paso sin esperar sentir seguridad total", "Lo haría imperfecto y lo mejoraría después", "Pediría ayuda sin pena", "Diría que sí", "Diría que no con calma", "Lo decidiría desde la calma, sin prisa"];
+const BANK = {
+  impostor: ["Muestra algo tuyo sin esperar a que esté perfecto", "Comparte una opinión en una conversación aunque te dé pena", "Pide feedback sobre algo que hiciste", "Anota tres logros tuyos y léelos en voz alta", "Haz algo que aún no dominas sin disculparte antes"],
+  tiempo: ["Reserva 30 minutos para tu objetivo y respétalos", "Apaga las notificaciones una hora y avanza en tu objetivo", "Elimina una tarea que no es prioridad", "Haz lo importante antes de abrir el celular", "Agenda en tu calendario el tiempo de tu objetivo de esta semana"],
+  dinero: ["Da un paso de tu objetivo que no cueste dinero", "Pregunta el precio de algo que has evitado preguntar", "Revisa tus números reales sin juzgarte", "Ofrece o cobra por algo que sabes hacer", "Busca un recurso gratuito para tu objetivo"],
+  tarde: ["Empieza hoy algo que creías que ya era tarde para ti", "Busca a alguien que empezó tarde y lo logró", "Aprende 20 minutos de algo nuevo", "Escribe lo que sí puedes hacer hoy y haz una de esas cosas", "Dile a alguien lo que quieres empezar y fija la fecha"],
+  merezco: ["Acepta un halago sin minimizarlo", "Regálate algo pequeño sin culpa", "Pide algo que quieres sin justificarte", "Descansa un rato sin sentir que debes ganártelo", "Agradece en voz alta algo que recibiste"],
+  "dirán": ["Haz hoy algo que normalmente no harías por miedo al qué dirán", "Di tu opinión en una conversación", "Muestra algo sin pedir aprobación", "Elige tu plan de hoy pensando solo en lo que quieres", "Di que no a un plan que no te nutre"],
+  exito: ["Celebra un logro pequeño en voz alta", "Cuenta un avance tuyo sin quitarle importancia", "Acepta un elogio o una oportunidad con un simple gracias", "Visualiza tu éxito 2 minutos sin ponerle peros", "Haz algo que te haga brillar un poco más de lo habitual"],
+  perfecto: ["Entrega o publica algo al 80% sin pulirlo más", "Termina una tarea en la mitad del tiempo que sueles tomarte", "Deja un detalle imperfecto a propósito", "Muestra un borrador a alguien", "Haz algo hoy sin buscar primero el mejor método"],
+  empezar: ["Escribe tu primer paso y hazlo en 10 minutos", "Elige una sola cosa y empieza aunque no esté clara", "Divide tu meta en tres pasos pequeños", "Haz una versión mínima de tu proyecto hoy", "Pregunta cómo empezó alguien que ya lo logró"]
+};
+const challengeFor = (i) => { const b = (S && S.data) ? S.data.bloqueo : ""; return (i >= 2 && i <= 6 && BANK[b]) ? BANK[b][(i - 2) % BANK[b].length] : DAYX[i].how[2]; };
 const BODYSCAN = ["Frente y ojos", "Mandíbula y lengua", "Cuello y hombros", "Pecho y respiración", "Abdomen", "Manos y brazos", "Piernas y pies"];
 const COMMIT = ["Postergar mi paso del día", "Compararme con otros", "Hablar mal de mí", "Revisar redes al despertar", "Decir “no puedo”", "Quedarme en la queja", "Gastar sin conciencia", "Aislarme"];
 const CUANDO = [["hoy", "Hoy"], ["manana", "Mañana"], ["tres", "En 3 días"], ["semana", "Esta semana"]];
@@ -316,7 +336,6 @@ const CUANDO_N = Object.fromEntries(CUANDO);
 /* ============ Estado ============ */
 let PREVIEW = store.get("e23_preview", false), REAL = null;
 let S = store.get("e23_state", null);
-if (PREVIEW) { REAL = S; S = store.get("e23_pstate", null) || makePreview(0); }
 let view = "inicio";
 let stepIdx = null;
 let draft = {};
@@ -325,10 +344,10 @@ let fotoImg = null;
 
 const save = () => store.set(PREVIEW ? "e23_pstate" : "e23_state", S);
 const newState = (keep) => ({ start: dayKey(), days: {}, data: keep ? keep.data : {}, restarts: keep ? keep.restarts : 0, cycles: keep ? keep.cycles : 0, note: "", done: false });
-const FIELDS = [["nombre", "pilar", "objetivo", "objetivoCustom", "rasgos"], ["bloqueo", "intensidad", "fraseNueva"], ["escenas"], ["ancla"], ["antes", "despues"], ["compromiso"], ["coherencia"], ["plan"], ["hecho", "proximo"]];
+const FIELDS = [["nombre", "pilar", "objetivo", "objetivoCustom", "rasgos"], ["bloqueo", "intensidad", "fraseNueva"], ["escenas"], ["pensamiento", "evidencia", "evidSi", "evidNo", "neutra"], ["miedoAntes", "peor", "planPractico", "mejor", "miedoDespues"], ["compromiso"], ["reto", "decision"], ["tamano", "plan"], ["hecho", "proximo"]];
 function makePreview(i, doneAll) {
   const real = REAL || store.get("e23_state", null), rd = (real && real.data) || {}, p0 = PILARES[0];
-  const sample = { nombre: "Tu nombre", pilar: p0.id, objetivo: p0.goals[1], objetivoCustom: "", rasgos: ["Calma", "Valentía", "Gratitud"], bloqueo: "tiempo", intensidad: "3", fraseNueva: BLOCKS[1].nw[0], escenas: p0.scenes.slice(0, 3), ancla: "si", antes: "2", despues: "4", compromiso: COMMIT[1], coherencia: { energia: "algunos", mente: "3", accion: "pequeno" }, plan: [{ t: p0.acts[0], cuando: "hoy" }, { t: p0.acts[1], cuando: "manana" }, { t: p0.acts[2], cuando: "semana" }], hecho: [], proximo: "" };
+  const sample = { nombre: "Tu nombre", pilar: p0.id, objetivo: p0.goals[1], objetivoCustom: "", rasgos: ["Calma", "Valentía", "Gratitud"], bloqueo: "tiempo", intensidad: "3", fraseNueva: BLOCKS[1].nw[0], escenas: p0.scenes.slice(0, 3), pensamiento: BLOCKS[1].old, evidencia: "suposicion", evidSi: "", evidNo: "", neutra: BLOCKS[1].neu[0], miedoAntes: "4", peor: PEOR[0], planPractico: PLANB[0], mejor: MEJOR[0], miedoDespues: "2", compromiso: COMMIT[1], reto: RETOS[0], decision: DECIS[0], tamano: "pequeno", plan: [{ t: p0.acts[0], cuando: "hoy" }, { t: p0.acts[1], cuando: "manana" }, { t: p0.acts[2], cuando: "semana" }], hecho: [], proximo: "" };
   const data = { ...sample }; Object.keys(rd).forEach(k => { const v = rd[k]; if (v && (!Array.isArray(v) || v.length)) data[k] = v; });
   if (!doneAll) for (let d = i; d < 9; d++) FIELDS[d].forEach(k => { delete data[k]; });
   if (i > 0 || doneAll) data.pilar = data.pilar || p0.id;
@@ -437,7 +456,7 @@ function tick() {
 
 /* ============ Sesión de audio (pantalla completa) ============ */
 function joinList(a) { return a.length > 1 ? a.slice(0, -1).join(", ") + " y " + a[a.length - 1] : a[0] || ""; }
-function personalize(t) { const d = (S && S.data) || {}; return t.replace("{objetivo}", objetivoTxt(d) || "tu objetivo").replace("{cualidades}", joinList(d.rasgos || []) || "la persona que quieres ser").replace("{frase}", d.fraseNueva || "tu frase nueva"); }
+function personalize(t) { const d = (S && S.data) || {}; return t.replace("{objetivo}", objetivoTxt(d) || "tu objetivo").replace("{cualidades}", joinList(d.rasgos || []) || "la persona que quieres ser").replace("{frase}", d.fraseNueva || "tu frase nueva").replace("{pensamiento}", d.pensamiento || (BLOCKS.find(b => b.id === d.bloqueo) || {}).old || "la duda"); }
 function setCue(t) { const c = $("#cue"); c.textContent = t; c.classList.remove("in"); void c.offsetWidth; c.classList.add("in"); }
 function openSession() {
   const i = todayIdx(), ph = phaseOf(i);
@@ -601,7 +620,7 @@ function vInicio() {
   if (S.done) {
     const d = S.data || {}, b = BLOCKS.find(x => x.id === d.bloqueo) || {};
     return '<header class="hero" data-phase="actuar"><div class="kicker">Programa completo</div><h1>Lo <em>lograste</em>, ' + esc(d.nombre || "") + '</h1><p class="muted">Terminaste los 9 días. Esto es lo que construiste.</p></header>' + dots() +
-      '<section class="card"><div class="lbl">Mi objetivo</div><p>' + esc(objetivoTxt()) + '</p><div class="lbl">Mi frase nueva</div><p class="phrase">' + esc(d.fraseNueva || "") + '</p><div class="lbl">Mi plan</div>' + (d.plan || []).map(p => '<p class="small">• ' + esc(p.t) + " <span class=\"muted\">(" + CUANDO_N[p.cuando] + ")</span></p>").join("") + '</section>' +
+      '<section class="card"><div class="lbl">Mi objetivo</div><p>' + esc(objetivoTxt()) + '</p><div class="lbl">Mi frase nueva</div><p class="phrase">' + esc(d.fraseNueva || "") + '</p><div class="lbl">Mi compromiso</div><p class="small">Dejo de: ' + esc(d.compromiso || "") + " · cumplido " + [6, 7, 8].filter(k => (S.days[k] || {}).commit).length + " de 3 días</p>" + '<div class="lbl">Mi plan</div>' + (d.plan || []).map(p => '<p class="small">• ' + esc(p.t) + " <span class=\"muted\">(" + CUANDO_N[p.cuando] + ")</span></p>").join("") + '</section>' +
       '<button class="btn full" type="button" data-act="again">Empezar otro ciclo de 9 días</button>';
   }
   const i = todayIdx(), ph = phaseOf(i), dy = DAYS[i], dx = DAYX[i], day = S.days[i] || {}, ok = dayDone(i);
@@ -609,11 +628,12 @@ function vInicio() {
   const tasks = [
     { ic: "audio", t: "Sesión de audio", m: dx.mins[0], line: dx.how[0], sub: ph.track.name + " · " + ph.track.band, on: day.audio, act: "session", lab: day.audio ? "Repetir" : "Empezar" },
     { ic: "paso", t: "Paso del día", m: dx.mins[1], line: dx.how[1], sub: dy.t, on: day.step, act: "step", lab: day.step ? "Ver" : "Abrir" },
-    { ic: "accion", t: "Acción real", m: dx.mins[2], line: dx.how[2], sub: "Cuenta aparte: no bloquea el día", on: day.challenge, act: "challenge", lab: day.challenge ? "Hecha" : "Lo hice" }
+    { ic: "accion", t: "Acción real", m: dx.mins[2], line: challengeFor(i), sub: "Cuenta aparte: no bloquea el día", on: day.challenge, act: "challenge", lab: day.challenge ? "Hecha" : "Lo hice" }
   ];
   return n + '<section class="dayhero" data-phase="' + ph.id + '"><div class="dh-top"><div><div class="kicker">' + ph.tag + " · " + ph.name + '</div><h1>Día ' + (i + 1) + '</h1></div>' +
     '<svg class="ringsvg" viewBox="0 0 74 74" role="img" aria-label="' + fin + ' de 9 días completos"><circle class="bg" cx="37" cy="37" r="30"/><circle class="fg" cx="37" cy="37" r="30" stroke-dasharray="' + (C * fin / 9).toFixed(1) + " " + C.toFixed(1) + '"/><text x="37" y="38">' + fin + "/9</text></svg></div>" +
     '<h2 class="headline">' + esc(dx.h) + '</h2><p class="muted">' + esc(dx.why) + '</p><button class="linkbtn" type="button" data-act="welcome">¿Cómo funciona?</button></section>' +
+    (i >= 6 && (S.data || {}).compromiso ? '<section class="commit" data-phase="' + ph.id + '"><div><div class="lbl">Hoy dejo de</div><p>' + esc(S.data.compromiso) + '</p></div><button class="mini' + (day.commit ? " on" : "") + '" type="button" data-act="commit">' + (day.commit ? "✓ Cumplido" : "Lo cumplí") + "</button></section>" : "") +
     (ok ? '<section class="celebrate" data-phase="' + ph.id + '"><div class="big">¡Día ' + (i + 1) + ' completo!</div><p class="muted">' + (i < 8 ? "Mañana: " + esc(DAYX[i + 1].h) + "." : "Mañana cierras tu programa.") + ' Si pasa un día sin completarlo, el programa vuelve al día 1.</p></section>' : "") +
     '<section class="tl" data-phase="' + ph.id + '">' + tasks.map((t, k) => '<div class="tcard' + (t.on ? " done" : k === nowIdx ? " now" : "") + '"><div class="ico">' + svg(t.on ? "check" : t.ic) + '</div><div class="tc-body"><div class="tc-top"><h4>' + t.t + '</h4><span class="tc-min">' + t.m + ' min</span></div><p>' + esc(t.line) + '</p><p class="small">' + esc(t.sub) + '</p><div class="row"><button class="mini' + (t.on || k === nowIdx ? " on" : "") + '" type="button" data-act="' + t.act + '">' + t.lab + "</button>" + (t.on ? '<span class="tc-state">Hecho</span>' : k === nowIdx ? '<span class="tc-state">Ahora</span>' : "") + "</div></div></div>").join("") + "</section>" +
     (ok ? "" : '<p class="muted small">Para completar el día necesitas la sesión de audio y el paso del día. La acción real cuenta aparte.</p>');
@@ -632,10 +652,11 @@ function summaryDay(i) {
   if (i === 0) out.push("Nombre: " + d.nombre, "Pilar: " + (p ? p.name : ""), "Objetivo: " + objetivoTxt(), "Cualidades: " + (d.rasgos || []).join(", "));
   if (i === 1 && b) out.push("Lo que me repetía: " + b.old, "Lo nuevo: " + d.fraseNueva, "Intensidad: " + d.intensidad + " de 5");
   if (i === 2) out.push("Escenas: " + (d.escenas || []).map(s => SCENE_NAMES[s]).join(", "));
-  if (i === 3) out.push("Ancla de la mañana hecha.");
-  if (i === 4) out.push("Antes: " + d.antes + " de 5 · Después: " + d.despues + " de 5");
+  if (i === 3) out.push("Pensamiento: " + d.pensamiento, "Evidencia: " + ({ suposicion: "es solo una suposición", parcial: "algo de evidencia", cierto: "me parece cierto" })[d.evidencia], "En neutro: " + d.neutra);
+  if (i === 4) out.push("Miedo: de " + d.miedoAntes + " a " + d.miedoDespues + " sobre 5", "Lo peor: " + d.peor, "Mi plan: " + d.planPractico, "Lo mejor: " + d.mejor);
   if (i === 5) out.push("Compromiso: dejo de " + String(d.compromiso || "").toLowerCase());
-  if (i === 6 && d.coherencia) out.push(...coherenceTip(d.coherencia));
+  if (i === 6) out.push("Mi reto: " + d.reto, "Mi nueva versión decide: " + d.decision);
+  if (i === 7) out.push("Tamaño del plan: " + ({ pequeno: "muy pequeño para mi meta", justo: "del tamaño justo", sin: "aún sin plan" })[d.tamano]);
   if (i === 7) (d.plan || []).forEach(x => out.push("• " + x.t + " (" + CUANDO_N[x.cuando] + ")"));
   if (i === 8 && d.proximo) out.push("Próximo paso: " + d.proximo);
   return out.map(x => "<p>" + esc(x) + "</p>").join("");
@@ -669,12 +690,11 @@ function vAjustesFull() {
 }
 
 /* ----- Paso del día ----- */
-const coherenceTip = (c) => { const t = [];
-  if (c.energia === "casi") t.push("Tu energía necesita constancia: protege tus sesiones diarias."); else if (c.energia === "algunos") t.push("Sube tu constancia: la sesión de audio diaria es parte del plan.");
-  if (c.mente <= 2) t.push("Tu mente aún duda: repite tu frase nueva cada mañana."); if (c.accion === "pequeno") t.push("Tu plan es más pequeño que tu meta: añade una acción que te saque de tu zona cómoda."); if (c.accion === "sin") t.push("Te falta un plan: mañana armas el tuyo.");
-  if (!t.length) t.push("Tus tres capas están alineadas. Sostén el ritmo."); return t; };
+const tamanoTip = (t) => ({ pequeno: "Tu plan es más pequeño que tu meta: añade una acción que te saque de tu zona cómoda.", justo: "Tu plan tiene el tamaño de tu meta. Sostén el ritmo.", sin: "Te falta un plan: elige hoy tus tres acciones." })[t];
+const oneLine = (k, opts, d, ph) => '<div class="row">' + chips(k, opts, d[k]) + '</div><input class="field" data-in="' + k + '" maxlength="100" placeholder="' + ph + '" value="' + esc(opts.includes(d[k]) ? "" : (d[k] || "")) + '">';
+const scale5 = (k, d) => '<div class="row">' + chips(k, [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(d[k] || "")) + "</div>";
 
-function openStep(i) { stepIdx = i; draft = JSON.parse(JSON.stringify(S.data || {})); if (i === 2 && !(draft.escenas || []).length && pilar()) draft.escenas = pilar().scenes.slice(0, 3); view = "dia"; render(); }
+function openStep(i) { stepIdx = i; draft = JSON.parse(JSON.stringify(S.data || {})); if (i === 3 && !draft.pensamiento && draft.bloqueo) draft.pensamiento = BLOCKS.find(x => x.id === draft.bloqueo).old; if (i === 2 && !(draft.escenas || []).length && pilar()) draft.escenas = pilar().scenes.slice(0, 3); view = "dia"; render(); }
 function vDia() {
   const i = stepIdx, dy = DAYS[i], ph = phaseOf(i), d = draft, p = PILARES.find(x => x.id === d.pilar), b = BLOCKS.find(x => x.id === d.bloqueo), ro = i < todayIdx() || (S.days[i] && S.days[i].step && i !== todayIdx());
   let h = '<button class="back" type="button" data-act="back">← Volver</button><header class="hero" data-phase="' + ph.id + '"><div class="kicker">Día ' + (i + 1) + " · " + ph.name + "</div><h2>" + esc(dy.t) + '</h2><p class="muted">' + esc(dy.intro) + "</p></header><div class=\"whybanner\" data-phase=\"" + ph.id + '"><div class="ico">' + svg("sol") + "</div><div><b>Para qué</b><p>" + esc(DAYX[i].why) + "</p><p class=\"small muted\">Qué haces: " + esc(DAYX[i].how[1]) + "</p></div></div><section class=\"card\" data-phase=\"" + ph.id + '">';
@@ -690,18 +710,27 @@ function vDia() {
   } else if (dy.kind === "reality") {
     h += p ? '<div class="lbl">Elige 3 escenas de tu nueva realidad</div><div class="row">' + chips("escenas", p.scenes.map(s => [s, SCENE_NAMES[s]]), d.escenas || [], 3) + "</div>" : '<p class="muted">Primero completa el día 1 para elegir tu pilar.</p>';
     if (p && (d.escenas || []).length === 3) h += '<canvas class="collage" id="cv" aria-label="Vista previa de tu collage"></canvas><div class="row"><label class="btn ghost" for="fotoIn" style="cursor:pointer">' + (fotoImg ? "Cambiar mi foto" : "Añadir mi foto (opcional)") + '</label></div><input id="fotoIn" type="file" accept="image/*" hidden><div class="tip">Ritual de 2 minutos: mira tu collage, respira lento y siente gratitud como si ya lo estuvieras viviendo. ' + timerBtn(120) + "</div>";
-  } else if (dy.kind === "anchor") {
-    h += '<div class="lbl">Tu frase nueva</div><p class="phrase">' + esc(d.fraseNueva || "Aún no elegiste una frase (día 2).") + '</p><div class="tip"><p>1. Al despertar, antes del celular, respira lento tres veces.</p><p>2. Repite tu frase y siente la escena de tu collage durante 5 minutos.</p><p>3. Agradece como si ya fuera real.</p>' + timerBtn(300) + '</div><div class="row">' + chips("ancla", [["si", "Hice mi ancla de hoy"]], d.ancla) + "</div>";
-  } else if (dy.kind === "scale") {
-    h += '<div class="tip">Primero responde “antes”, haz tu sesión de audio y vuelve para responder “después”.</div><div class="lbl">Cómo me siento ahora (1 mal, 5 muy bien)</div><div class="row">' + chips("antes", [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(d.antes || "")) + '</div><div class="lbl">Cómo me siento después de la sesión</div><div class="row">' + chips("despues", [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(d.despues || "")) + "</div>" + (d.antes && d.despues ? '<div class="tip">' + (+d.despues > +d.antes ? "Subiste " + (d.despues - d.antes) + " punto(s). Tu cuerpo responde." : +d.despues === +d.antes ? "Te mantuviste estable. Sigue practicando." : "Hoy bajaste un poco. Eso también es información; descansa y sigue.") + "</div>" : "");
+  } else if (dy.kind === "socratic") {
+    const bl = BLOCKS.find(x => x.id === d.bloqueo), neus = bl ? bl.neu : BLOCKS.slice(0, 3).map(x => x.neu[0]);
+    h += '<div class="lbl">1. Tu pensamiento limitante</div>' + oneLine("pensamiento", BLOCKS.map(x => x.old), d, "O escribe el tuyo (máx. 100)") +
+      '<div class="lbl">2. ¿Tienes evidencia 100% real de que esto es verdad, o es solo una suposición de tu mente?</div><div class="row">' + chips("evidencia", [["suposicion", "Es solo una suposición"], ["parcial", "Tengo algo de evidencia"], ["cierto", "Me parece cierto"]], d.evidencia) + "</div>";
+    if (d.evidencia === "parcial" || d.evidencia === "cierto") h += '<input class="field" data-in="evidSi" maxlength="100" placeholder="¿Qué evidencia tienes? (opcional)" value="' + esc(d.evidSi || "") + '"><input class="field" data-in="evidNo" maxlength="100" placeholder="¿Qué evidencia tienes de lo contrario? (opcional)" value="' + esc(d.evidNo || "") + '">';
+    h += '<div class="lbl">3. Reescríbelo como un hecho objetivo y neutro</div>' + oneLine("neutra", neus, d, "O escríbelo con tus palabras (máx. 100)");
+  } else if (dy.kind === "decat") {
+    h += '<div class="lbl">¿Qué tan grande se siente tu miedo ahora? (1 pequeño, 5 enorme)</div>' + scale5("miedoAntes", d) +
+      '<div class="lbl">1. ¿Qué es lo peor que podría pasar si tomas acción hoy?</div>' + oneLine("peor", PEOR, d, "O escríbelo (máx. 100)") +
+      '<div class="lbl">2. Si eso ocurriera, ¿cuál sería tu plan práctico para solucionarlo?</div>' + oneLine("planPractico", PLANB, d, "O escríbelo (máx. 100)") +
+      '<div class="lbl">3. ¿Y qué es lo mejor que podría pasar si todo sale bien?</div>' + oneLine("mejor", MEJOR, d, "O escríbelo (máx. 100)") +
+      '<div class="lbl">Ahora, ¿qué tan grande se siente tu miedo? (1 pequeño, 5 enorme)</div>' + scale5("miedoDespues", d);
+    if (d.miedoAntes && d.miedoDespues) h += '<div class="tip">' + (+d.miedoDespues < +d.miedoAntes ? "Tu miedo bajó de " + d.miedoAntes + " a " + d.miedoDespues + ". Mirarlo de frente le quitó tamaño." : +d.miedoDespues === +d.miedoAntes ? "Tu miedo se mantiene igual. Repite el ejercicio mañana o apóyate en tu plan práctico." : "Hoy el miedo subió un poco. Es normal; respira y sigue con tu plan.") + "</div>";
   } else if (dy.kind === "body") {
     h += '<div class="tip"><p>Recorre el cuerpo despacio, 20 segundos en cada zona, soltando la tensión al exhalar:</p>' + BODYSCAN.map(z => "<p>• " + z + "</p>").join("") + timerBtn(180) + '</div><div class="lbl">Algo que dejo de hacer a partir de hoy</div><div class="row">' + chips("compromiso", COMMIT, d.compromiso) + "</div>";
-  } else if (dy.kind === "coherence") {
-    const c = d.coherencia || {};
-    h += '<div class="lbl">Energía: ¿qué tanto sostienes tu práctica diaria?</div><div class="row">' + chips("coherencia.energia", [["todos", "Todos los días"], ["algunos", "Algunos días"], ["casi", "Casi nada"]], c.energia) + '</div><div class="lbl">Mente: ¿qué tan posible sientes tu meta? (1 a 5)</div><div class="row">' + chips("coherencia.mente", [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), String(c.mente || "")) + '</div><div class="lbl">Acción: mi plan actual es</div><div class="row">' + chips("coherencia.accion", [["pequeno", "Muy pequeño para mi meta"], ["justo", "Del tamaño justo"], ["sin", "No tengo plan"]], c.accion) + "</div>";
-    if (c.energia && c.mente && c.accion) h += '<div class="tip">' + coherenceTip({ ...c, mente: +c.mente }).map(x => "<p>" + esc(x) + "</p>").join("") + "</div>";
+  } else if (dy.kind === "reframe") {
+    h += '<div class="lbl">1. ¿Qué reto o decisión tienes pendiente hoy?</div>' + oneLine("reto", RETOS, d, "O escríbelo (máx. 100)") +
+      '<div class="lbl">2. Frente a este reto, ¿qué decisión tomaría hoy la versión de ti que ya logró todas sus metas?</div>' + oneLine("decision", DECIS, d, "O escríbelo (máx. 100)");
   } else if (dy.kind === "plan") {
     const plan = d.plan || [];
+    h += '<div class="lbl">¿Tu plan actual es del tamaño de tu meta?</div><div class="row">' + chips("tamano", [["pequeno", "Muy pequeño para mi meta"], ["justo", "Del tamaño justo"], ["sin", "No tengo plan"]], d.tamano) + "</div>" + (d.tamano ? '<div class="tip">' + tamanoTip(d.tamano) + "</div>" : "");
     h += p ? '<div class="lbl">Elige 3 acciones concretas (' + plan.length + " de 3)</div><div class=\"row\">" + p.acts.map(a => '<button class="chip block" type="button" data-act="addplan" data-v="' + esc(a) + '" aria-pressed="' + plan.some(x => x.t === a) + '">' + esc(a) + "</button>").join("") + '</div><div class="row"><input class="field" id="own" maxlength="60" placeholder="O añade una propia (máx. 60)" style="flex:1"><button class="btn ghost" type="button" data-act="addown">Añadir</button></div>' : '<p class="muted">Primero completa el día 1.</p>';
     h += plan.map((x, k) => '<div class="plan-item"><div class="top"><b style="font-weight:500">' + esc(x.t) + '</b><button class="x" type="button" data-act="delplan" data-v="' + k + '" aria-label="Quitar">×</button></div><div class="row">' + CUANDO.map(([v, n]) => '<button class="chip" type="button" data-act="when" data-k="' + k + '" data-v="' + v + '" aria-pressed="' + (x.cuando === v) + '">' + n + "</button>").join("") + "</div></div>").join("");
   } else if (dy.kind === "close") {
@@ -717,11 +746,11 @@ function stepValid() {
   if (k === "goal") return !!(d.nombre && d.nombre.trim() && d.pilar && (d.objetivo || (d.objetivoCustom || "").trim()) && (d.rasgos || []).length === 3);
   if (k === "block") return !!(d.bloqueo && d.intensidad && d.fraseNueva && BLOCKS.find(x => x.id === d.bloqueo).nw.includes(d.fraseNueva));
   if (k === "reality") return (d.escenas || []).length === 3;
-  if (k === "anchor") return d.ancla === "si";
-  if (k === "scale") return !!(d.antes && d.despues);
+  if (k === "socratic") return !!((d.pensamiento || "").trim() && d.evidencia && (d.neutra || "").trim());
+  if (k === "decat") return !!(d.miedoAntes && (d.peor || "").trim() && (d.planPractico || "").trim() && (d.mejor || "").trim() && d.miedoDespues);
   if (k === "body") return !!d.compromiso;
-  if (k === "coherence") return !!(d.coherencia && d.coherencia.energia && d.coherencia.mente && d.coherencia.accion);
-  if (k === "plan") return (d.plan || []).length === 3 && d.plan.every(x => x.cuando);
+  if (k === "reframe") return !!((d.reto || "").trim() && (d.decision || "").trim());
+  if (k === "plan") return !!d.tamano && (d.plan || []).length === 3 && d.plan.every(x => x.cuando);
   if (k === "close") return !!d.proximo;
   return true;
 }
@@ -762,6 +791,7 @@ $("#view").addEventListener("click", (e) => {
   else if (act === "again") { S = { ...newState(S), cycles: (S.cycles || 0) + 1 }; save(); render(); }
   else if (act === "session") openSession();
   else if (act === "step") openStep(todayIdx());
+  else if (act === "commit") { const d = S.days[todayIdx()] = S.days[todayIdx()] || {}; d.commit = !d.commit; save(); render(); }
   else if (act === "challenge") { const d = S.days[todayIdx()] = S.days[todayIdx()] || {}; d.challenge = !d.challenge; save(); render(); }
   else if (act === "back") { view = "inicio"; render(); }
   else if (act === "pick") {
@@ -801,6 +831,7 @@ function startTimer(btn, sec) {
 }
 $("#nav").addEventListener("click", (e) => { const b = e.target.closest("[data-nav]"); if (b) { view = b.dataset.nav; askMode = ""; render(); } });
 function applyTheme() { const t = store.get("e23_theme", "auto"); if (t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t); }
+if (PREVIEW) { REAL = S; S = store.get("e23_pstate", null) || makePreview(0); }
 applyTheme();
 loadFoto().then(() => render());
 render();
