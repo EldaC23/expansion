@@ -235,7 +235,10 @@ const store = {
 };
 const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const dayKey = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const cutHours = () => { const v = store.get("e23_cut", 4); return typeof v === "number" ? v : 4; };
+const todayKey = () => dayKey(new Date(Date.now() - cutHours() * 3600000));
 const parseKey = (k) => { const a = k.split("-").map(Number); return new Date(a[0], a[1] - 1, a[2]); };
+const addDays = (k, n) => { const d = parseKey(k); d.setDate(d.getDate() + n); return dayKey(d); };
 const daysBetween = (a, b) => Math.round((parseKey(b) - parseKey(a)) / 864e5);
 const fmt = (s) => { s = Math.max(0, Math.round(s)); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
 
@@ -360,7 +363,7 @@ let askMode = "";
 let fotoImg = null, fotos = {};
 
 const save = () => store.set(PREVIEW ? "e23_pstate" : "e23_state", S);
-const newState = (keep) => ({ start: dayKey(), days: {}, data: keep ? keep.data : {}, restarts: keep ? keep.restarts : 0, cycles: keep ? keep.cycles : 0, note: "", done: false });
+const newState = (keep) => ({ start: todayKey(), days: {}, data: keep ? keep.data : {}, restarts: keep ? keep.restarts : 0, cycles: keep ? keep.cycles : 0, note: "", done: false });
 const FIELDS = [["nombre", "pilar", "objetivo", "objetivoCustom", "rasgos"], ["bloqueo", "intensidad", "fraseNueva"], ["escenas", "frase"], ["pensamiento", "creeAntes", "evidencia", "evidSi", "evidNo", "neutra", "soltar", "creeDespues"], ["miedoAntes", "accionMiedo", "peor", "prob", "veces", "planPractico", "superado", "mejor", "probable", "valentia", "ensayo", "miniAccion", "miedoDespues"], ["compromiso", "reemplazo", "calma"], ["reto", "decision", "ensayoDecision", "primerGesto"], ["tamano", "plan", "ensayoPlan"], ["hecho", "proximo", "cierre", "aprendi"]];
 function makePreview(i, doneAll) {
   const real = REAL || store.get("e23_state", null), rd = (real && real.data) || {}, p0 = PILARES[0];
@@ -369,16 +372,16 @@ function makePreview(i, doneAll) {
   if (!doneAll) for (let d = i; d < 9; d++) FIELDS[d].forEach(k => { delete data[k]; });
   if (i > 0 || doneAll) data.pilar = data.pilar || p0.id;
   const days = {}; for (let j = 0; j < (doneAll ? 9 : i); j++) days[j] = { audio: true, step: true };
-  return { start: dayKey(), days, data, restarts: 0, cycles: 0, note: "", done: !!doneAll, pday: doneAll ? 8 : i };
+  return { start: todayKey(), days, data, restarts: 0, cycles: 0, note: "", done: !!doneAll, pday: doneAll ? 8 : i };
 }
 const dayDone = (i) => { const d = S.days[i]; return !!(d && d.audio && d.step); };
-const todayIdx = () => PREVIEW ? (S.pday | 0) : Math.min(daysBetween(S.start, dayKey()), 8);
+const todayIdx = () => PREVIEW ? (S.pday | 0) : Math.min(daysBetween(S.start, todayKey()), 8);
 const phaseOf = (i) => PHASES[Math.floor(i / 3)];
 const pilar = () => PILARES.find(p => p.id === (S.data || {}).pilar);
 
 function check() {
   if (PREVIEW || !S || S.done) return;
-  const idx = daysBetween(S.start, dayKey());
+  const idx = daysBetween(S.start, todayKey());
   for (let i = 0; i < Math.min(idx, 9); i++) {
     if (!dayDone(i)) {
       const ex = S.days[i] || {};
@@ -749,12 +752,22 @@ function vAjustes() {
   if (PREVIEW) h = h.replace(/<section class="card"><h3>Programa<\/h3>[\s\S]*?<\/section>/, "").replace(/<section class="card"><h3>Mis datos<\/h3>[\s\S]*?<\/section>/, "");
   return h.replace('<p class="muted small">Es una herramienta', card + '<p class="muted small">Es una herramienta');
 }
+const cutLabel = (v) => v === 0 ? "12 a. m." : v + " a. m.";
+function fixDay(n) {
+  const keep = S.days[todayIdx()] || {}, days = {};
+  for (let i = 0; i < n - 1; i++) days[i] = { audio: true, step: true };
+  if (Object.keys(keep).length) days[n - 1] = keep;
+  S = { ...S, start: addDays(todayKey(), -(n - 1)), days, done: false, note: "Ajustaste tu programa al día " + n + "." }; save();
+}
 function vAjustesFull() {
   const th = store.get("e23_theme", "auto");
   return '<header class="hero"><div class="kicker">Ajustes</div><h1>Ajustes</h1></header>' +
     '<section class="card"><h3>Tema</h3><div class="row">' + [["auto", "Automático"], ["light", "Claro"], ["dark", "Oscuro"]].map(([k, n]) => '<button class="chip" type="button" data-act="theme" data-v="' + k + '" aria-pressed="' + (th === k) + '">' + n + "</button>").join("") + "</div></section>" +
+    '<section class="card"><h3>El día termina a las</h3><p class="muted small">Lo que hagas antes de esta hora de la madrugada cuenta para el día anterior. Ahora mismo: ' + cutLabel(cutHours()) + '.</p><div class="row">' + [0, 3, 4, 5].map(v => '<button class="chip" type="button" data-act="cut" data-v="' + v + '" aria-pressed="' + (cutHours() === v) + '">' + cutLabel(v) + "</button>").join("") + "</div></section>" +
     '<section class="card"><h3>Programa</h3><p class="muted small">' + (S ? "Día " + (S.done ? 9 : todayIdx() + 1) + " de 9. Reinicios: " + (S.restarts || 0) + "." : "Aún no has empezado.") + '</p>' +
-    (S ? (askMode === "reset" ? '<div class="row"><button class="btn warn" type="button" data-act="reset">Sí, reiniciar</button><button class="btn ghost" type="button" data-act="cancel">Cancelar</button></div>' : '<button class="btn ghost" type="button" data-act="ask-reset">Reiniciar programa</button>') : "") + "</section>" +
+    (S ? (askMode === "reset" ? '<div class="row"><button class="btn warn" type="button" data-act="reset">Sí, reiniciar</button><button class="btn ghost" type="button" data-act="cancel">Cancelar</button></div>' : '<button class="btn ghost" type="button" data-act="ask-reset">Reiniciar programa</button>') : "") +
+    (S && !S.done ? '<p class="muted small" style="margin-top:6px">¿Se reinició o se desajustó por la hora? Corrige en qué día vas:</p><div class="row">' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => '<button class="chip" type="button" data-act="fixday" data-v="' + n + '" aria-pressed="' + (askMode === "fix:" + n) + '">' + n + "</button>").join("") + "</div>" +
+      (String(askMode).startsWith("fix:") ? '<div class="row"><button class="btn warn" type="button" data-act="fixgo">Poner mi programa en el día ' + askMode.slice(4) + '</button><button class="btn ghost" type="button" data-act="cancel">Cancelar</button></div>' : "") : "") + "</section>" +
     '<section class="card"><h3>Mis datos</h3><p class="muted small">Tus respuestas y tu foto viven solo en este dispositivo. Borrarlos no se puede deshacer.</p>' +
     (askMode === "wipe" ? '<div class="row"><button class="btn warn" type="button" data-act="wipe">Sí, borrar todo</button><button class="btn ghost" type="button" data-act="cancel">Cancelar</button></div>' : '<button class="btn ghost" type="button" data-act="ask-wipe">Borrar mis datos y mi foto</button>') + "</section>" +
     '<p class="muted small">Es una herramienta de relajación y desarrollo personal, no un tratamiento médico. Si algo te incomoda con los audios, baja el volumen o detén la sesión.</p>';
@@ -919,6 +932,9 @@ $("#view").addEventListener("click", (e) => {
   else if (act === "download") { const c = $("#cv"); c.toBlob((b) => { const u = URL.createObjectURL(b), l = document.createElement("a"); l.href = u; l.download = "mi-realidad.png"; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }); }
   else if (act === "delfoto") delFoto(v);
   else if (act === "theme") { store.set("e23_theme", v); applyTheme(); render(); }
+  else if (act === "cut") { store.set("e23_cut", +v); render(); }
+  else if (act === "fixday") { askMode = "fix:" + v; render(); }
+  else if (act === "fixgo") { fixDay(+String(askMode).slice(4)); askMode = ""; view = "inicio"; render(); }
   else if (act === "ask-reset") { askMode = "reset"; render(); }
   else if (act === "ask-wipe") { askMode = "wipe"; render(); }
   else if (act === "cancel") { askMode = ""; render(); }
