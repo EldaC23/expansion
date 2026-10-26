@@ -281,9 +281,9 @@ const IC = {
 };
 const svg = (n) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + IC[n] + "</svg>";
 const CUES = {
-  ver: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja la frente, la mandíbula y los hombros. Suelta un poco más con cada exhalación."], [.22, "Piensa en tu objetivo: {objetivo}."], [.38, "Imagínalo como si ya fuera real. ¿Dónde estás? ¿Qué ves, qué oyes, qué sientes?"], [.55, "Ahora siente que eres {cualidades}. Nota cómo se siente tu cuerpo siendo esa persona."], [.72, "Agradece, como si ya lo estuvieras viviendo."], [.88, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]],
-  sentir: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja el cuerpo de arriba abajo: cara, cuello, pecho, abdomen, piernas."], [.22, "Si aparece la voz que dice «{pensamiento}», salúdala y suéltala: es solo una suposición."], [.38, "Recuerda tu frase nueva: “{frase}”. Repítela en silencio al exhalar."], [.55, "Visualiza tu escena y deja que la emoción suba: calma, alegría, seguridad."], [.72, "Quédate en esa emoción. Agradece con todo el cuerpo, como si ya fuera tu vida."], [.9, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]],
-  actuar: [[0, "Cierra los ojos. Respira siguiendo el círculo: inhala cuando crece, exhala cuando se encoge."], [.1, "Relaja la frente, la mandíbula y los hombros."], [.22, "Piensa en tu meta: {objetivo}. Siente que ya es posible."], [.4, "Piensa en tu siguiente paso concreto. ¿Cuál es la primera acción?"], [.58, "Imagínate haciéndola con calma y decisión."], [.75, "Siente la confianza de alguien que actúa. Eres {cualidades}."], [.9, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]]
+  ver: [[0, "Respira lento, al ritmo del círculo: inhala cuando crece, exhala cuando se encoge. Ya puedes volver a cerrar los ojos."], [.1, "Relaja la frente, la mandíbula y los hombros. Suelta un poco más con cada exhalación."], [.22, "Piensa en tu objetivo: {objetivo}."], [.38, "Imagínalo como si ya fuera real. ¿Dónde estás? ¿Qué ves, qué oyes, qué sientes?"], [.55, "Ahora siente que eres {cualidades}. Nota cómo se siente tu cuerpo siendo esa persona."], [.72, "Agradece, como si ya lo estuvieras viviendo."], [.88, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]],
+  sentir: [[0, "Respira lento, al ritmo del círculo: inhala cuando crece, exhala cuando se encoge. Ya puedes volver a cerrar los ojos."], [.1, "Relaja el cuerpo de arriba abajo: cara, cuello, pecho, abdomen, piernas."], [.22, "Si aparece la voz que dice «{pensamiento}», salúdala y suéltala: es solo una suposición."], [.38, "Recuerda tu frase nueva: “{frase}”. Repítela en silencio al exhalar."], [.55, "Visualiza tu escena y deja que la emoción suba: calma, alegría, seguridad."], [.72, "Quédate en esa emoción. Agradece con todo el cuerpo, como si ya fuera tu vida."], [.9, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]],
+  actuar: [[0, "Respira lento, al ritmo del círculo: inhala cuando crece, exhala cuando se encoge. Ya puedes volver a cerrar los ojos."], [.1, "Relaja la frente, la mandíbula y los hombros."], [.22, "Piensa en tu meta: {objetivo}. Siente que ya es posible."], [.4, "Piensa en tu siguiente paso concreto. ¿Cuál es la primera acción?"], [.58, "Imagínate haciéndola con calma y decisión."], [.75, "Siente la confianza de alguien que actúa. Eres {cualidades}."], [.9, "Respira profundo tres veces. Cuando termine el audio, abre los ojos despacio."]]
 };
 const PILARES = [
   { id: "dinero", name: "Dinero y abundancia", scenes: ["ciudad", "amanecer", "camino", "hogar"],
@@ -399,7 +399,40 @@ function check() {
 let ctx = null, master = null, nodes = [], playing = false, startedAt = 0, endAt = 0, wake = null;
 const GAIN = 1.8;
 let volume = store.get("e23_vol", 0.8);
+const PREP = 10;
 let sess = { open: false, minutes: 10, started: false, finished: false, track: null, idx: 0 };
+
+let bellCtx = null;
+const chimeOn = () => store.get("e23_chime", true) !== false;
+function bell(long) {
+  if (!chimeOn()) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!bellCtx || bellCtx.state === "closed") bellCtx = new AC();
+    const c = bellCtx; c.resume();
+    const t = c.currentTime, dur = long ? 4 : 2.6, out = c.createGain();
+    out.gain.value = 0.5; out.connect(c.destination);
+    [[880, 1], [1320, 0.45], [1760, 0.2]].forEach(([f, a]) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(a * 0.6, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(out); o.start(t); o.stop(t + dur + 0.1);
+    });
+    if (long) [0.9].forEach((dl) => [880, 1320].forEach((f, k) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = "sine"; o.frequency.value = f * 0.75;
+      g.gain.setValueAtTime(0.0001, t + dl); g.gain.linearRampToValueAtTime(0.3 / (k + 1), t + dl + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dl + 3);
+      o.connect(g).connect(out); o.start(t + dl); o.stop(t + dl + 3.1);
+    }));
+    duck(long ? 4 : 2.6);
+  } catch (e) {}
+}
+function duck(sec) {
+  if (!ctx || !master) return;
+  const now = ctx.currentTime, v = volume * GAIN;
+  master.gain.cancelScheduledValues(now); master.gain.setTargetAtTime(v * 0.45, now, 0.1);
+  master.gain.setTargetAtTime(v, now + sec, 0.6);
+}
 
 function noiseBuffer(c, type) {
   const len = c.sampleRate * 6, buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
@@ -450,7 +483,7 @@ function unlockScreen() { try { if (wake) wake.release(); } catch (e) {} wake = 
 function startAudio() {
   buildGraph(sess.track); ctx.resume();
   master.gain.setTargetAtTime(volume * GAIN, ctx.currentTime, 1.2);
-  playing = true; startedAt = performance.now(); endAt = startedAt + sess.minutes * 60000;
+  playing = true; startedAt = performance.now(); endAt = startedAt + (PREP + sess.minutes * 60) * 1000;
   lockScreen(); tick();
 }
 function stopAudio() {
@@ -468,9 +501,9 @@ function tick() {
   let k; if (ph < inh) { k = ease(ph / inh); $("#orbLabel").textContent = "Inhala"; } else { k = 1 - ease((ph - inh) / exh); $("#orbLabel").textContent = "Exhala"; }
   $("#orb").style.transform = "scale(" + (0.7 + 0.3 * k).toFixed(3) + ")";
   $("#clock").textContent = fmt((endAt - now) / 1000) + " restantes";
-  const frac = el / (sess.minutes * 60); let ci = 0; sess.cues.forEach((c, k) => { if (frac >= c[0]) ci = k; });
-  if (ci !== sess.cueIdx) { sess.cueIdx = ci; setCue(sess.cues[ci][1]); }
-  if (now >= endAt) { stopAudio(); sess.finished = true; sess.started = false; renderSession(); return; }
+  const frac = (el - PREP) / (sess.minutes * 60); let ci = -1; sess.cues.forEach((c, k) => { if (frac >= c[0]) ci = k; });
+  if (ci !== sess.cueIdx) { sess.cueIdx = ci; if (ci >= 0) { setCue(sess.cues[ci][1]); bell(); } }
+  if (now >= endAt) { bell(true); stopAudio(); sess.finished = true; sess.started = false; renderSession(); return; }
   requestAnimationFrame(tick);
 }
 
@@ -493,7 +526,7 @@ function renderSession() {
   dur.innerHTML = sess.started ? "" : [6, 10, 15, 20].map(m => '<button class="chip" type="button" data-min="' + m + '" aria-pressed="' + (sess.minutes === m) + '">' + m + " min</button>").join("");
   const stepPending = !(S.days[sess.idx] && S.days[sess.idx].step) && sess.idx === todayIdx();
   $("#sGo").textContent = sess.finished ? (stepPending ? "Ir a mi paso del día" : "Cerrar") : sess.started ? "Terminar" : "Comenzar";
-  if (!sess.started) setCue(sess.finished ? "Sesión completa. Respira, agradece y llévate esta sensación al resto del día." : "Siéntate cómodo, ponte audífonos y cierra los ojos. Aquí te iré guiando con texto mientras suena el audio.");
+  if (!sess.started) setCue(sess.finished ? "Sesión completa. Respira, agradece y llévate esta sensación al resto del día." : "Ponte audífonos y siéntate cómodo. Al pulsar Comenzar, cierra los ojos y respira lento. Cada vez que suene la campana, abre los ojos, lee la indicación y vuelve a cerrarlos. Cuando estés lista, pulsa Comenzar y cierra los ojos.");
   if (!sess.started) { $("#clock").textContent = sess.finished ? "00:00" : fmt(sess.minutes * 60); $("#orb").style.transform = "scale(.7)"; $("#orbLabel").textContent = sess.finished ? "Gracias" : "Listo"; }
 }
 function closeSession() { if (playing) stopAudio(); sess.open = false; sess.started = false; $("#sess").classList.remove("open"); render(); }
@@ -501,7 +534,7 @@ $("#sDur").addEventListener("click", (e) => { const b = e.target.closest("[data-
 $("#sGo").addEventListener("click", () => {
   if (sess.finished) { const go = !(S.days[sess.idx] && S.days[sess.idx].step) && sess.idx === todayIdx(); closeSession(); if (go) openStep(todayIdx()); return; }
   if (sess.started) { closeSession(); return; }
-  sess.started = true; renderSession();
+  sess.started = true; renderSession(); setCue("Cierra los ojos y respira lento. Cuando suene la campana, ábrelos y lee.");
   const d = S.days[sess.idx] = S.days[sess.idx] || {}; d.audio = true; save();
   startAudio();
 });
@@ -763,6 +796,7 @@ function vAjustesFull() {
   const th = store.get("e23_theme", "auto");
   return '<header class="hero"><div class="kicker">Ajustes</div><h1>Ajustes</h1></header>' +
     '<section class="card"><h3>Tema</h3><div class="row">' + [["auto", "Automático"], ["light", "Claro"], ["dark", "Oscuro"]].map(([k, n]) => '<button class="chip" type="button" data-act="theme" data-v="' + k + '" aria-pressed="' + (th === k) + '">' + n + "</button>").join("") + "</div></section>" +
+    '<section class="card"><h3>Campana de aviso</h3><p class="muted small">Suena cuando aparece una indicación nueva, para que abras los ojos, la leas y los vuelvas a cerrar.</p><div class="row">' + [[true, "Activada"], [false, "Apagada"]].map(([k, n]) => '<button class="chip" type="button" data-act="chime" data-v="' + k + '" aria-pressed="' + (chimeOn() === k) + '">' + n + "</button>").join("") + '<button class="chip" type="button" data-act="bellTest">Probar campana</button></div></section>' +
     '<section class="card"><h3>El día termina a las</h3><p class="muted small">Lo que hagas antes de esta hora de la madrugada cuenta para el día anterior. Ahora mismo: ' + cutLabel(cutHours()) + '.</p><div class="row">' + [0, 3, 4, 5].map(v => '<button class="chip" type="button" data-act="cut" data-v="' + v + '" aria-pressed="' + (cutHours() === v) + '">' + cutLabel(v) + "</button>").join("") + "</div></section>" +
     '<section class="card"><h3>Programa</h3><p class="muted small">' + (S ? "Día " + (S.done ? 9 : todayIdx() + 1) + " de 9. Reinicios: " + (S.restarts || 0) + "." : "Aún no has empezado.") + '</p>' +
     (S ? (askMode === "reset" ? '<div class="row"><button class="btn warn" type="button" data-act="reset">Sí, reiniciar</button><button class="btn ghost" type="button" data-act="cancel">Cancelar</button></div>' : '<button class="btn ghost" type="button" data-act="ask-reset">Reiniciar programa</button>') : "") +
@@ -932,6 +966,8 @@ $("#view").addEventListener("click", (e) => {
   else if (act === "download") { const c = $("#cv"); c.toBlob((b) => { const u = URL.createObjectURL(b), l = document.createElement("a"); l.href = u; l.download = "mi-realidad.png"; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }); }
   else if (act === "delfoto") delFoto(v);
   else if (act === "theme") { store.set("e23_theme", v); applyTheme(); render(); }
+  else if (act === "chime") { store.set("e23_chime", v === "true"); render(); }
+  else if (act === "bellTest") bell();
   else if (act === "cut") { store.set("e23_cut", +v); render(); }
   else if (act === "fixday") { askMode = "fix:" + v; render(); }
   else if (act === "fixgo") { fixDay(+String(askMode).slice(4)); askMode = ""; view = "inicio"; render(); }
@@ -944,8 +980,8 @@ $("#view").addEventListener("click", (e) => {
 function renderKeep(y) { render(); window.scrollTo(0, y); }
 function startTimer(btn, sec) {
   if (tmr) { clearInterval(tmr); tmr = null; }
-  const end = Date.now() + sec * 1000; btn.disabled = false;
-  const upd = () => { const left = Math.max(0, Math.round((end - Date.now()) / 1000)); const b = $('[data-act="timer"]'); if (b) b.textContent = left ? "Quedan " + fmt(left) + " (tocar para reiniciar)" : "Listo. Respira y agradece."; if (!left) { clearInterval(tmr); tmr = null; } };
+  const end = Date.now() + sec * 1000; btn.disabled = false; bell(); let rang = false;
+  const upd = () => { const left = Math.max(0, Math.round((end - Date.now()) / 1000)); const b = $('[data-act="timer"]'); if (b) b.textContent = left ? "Quedan " + fmt(left) + " (tocar para reiniciar)" : "Listo. Respira y agradece."; if (!left) { clearInterval(tmr); tmr = null; if (!rang) { rang = true; bell(true); } } };
   upd(); tmr = setInterval(upd, 500);
 }
 $("#nav").addEventListener("click", (e) => { const b = e.target.closest("[data-nav]"); if (b) { view = b.dataset.nav; askMode = ""; render(); } });
